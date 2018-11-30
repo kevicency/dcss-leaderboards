@@ -1,0 +1,40 @@
+{
+  "name": "speedcrawl",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@rebass/grid": "^6.0.0-4",
+    "@types/lodash": "^4.14.118",
+    "@types/rebass__grid": "^6.0.1",
+    "@types/webpack-env": "^1.13.6",
+    "apollo-boost": "^0.1.22",
+    "env-cmd": "^8.0.2",
+    "graphql": "^14.0.2",
+    "graphql-tag": "^2.10.0",
+    "lodash": "^4.17.11",
+    "office-ui-fabric-react": "^6.107.0",
+    "react": "^16.6.3",
+    "react-apollo": "^2.3.2",
+    "react-dom": "^16.6.3",
+    "react-router5": "^6.5.3",
+    "react-scripts-ts": "3.1.0",
+    "router5": "^6.6.2",
+    "router5-react": "^0.1.6",
+    "styled-components": "^4.1.2"
+  },
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject",
+    "predeploy": "env-cmd .env.deploy yarn build",
+    "deploy": "az storage blob upload-batch --destination \"\\$web\" --source build --connection-string \"$SPEEDCRAWL_STORAGE\""
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.10",
+    "@types/node": "^10.12.10",
+    "@types/react": "^16.7.8",
+    "@types/react-dom": "^16.0.11",
+    "typescript": "^3.1.6"
+  }
+}

@@ -1,0 +1,3 @@
+{
+  "ignoredModules": ["jest", "node-icu-charset-detector", "iconv"]
+}

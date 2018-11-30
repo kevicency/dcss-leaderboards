@@ -1,0 +1,50 @@
+{
+  "name": "@speedcrawl/functions",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Kevin Mees <kev.mees@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "prestart": "yarn build",
+    "start": "func host start",
+    "build": "tsc",
+    "funcpack": "funcpack pack -c .",
+    "prefuncpack": "yarn build",
+    "deploy": "cd .funcpack && func azure functionapp publish speedcrawl",
+    "predeploy": "yarn funcpack",
+    "sync": "ts-node src/sync.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@types/graphql-iso-date": "^3.3.1",
+    "@types/hashids": "^1.0.30",
+    "@types/irc": "^0.3.32",
+    "@types/lodash": "^4.14.118",
+    "@types/mongoose": "^5.3.1",
+    "@types/serialize-error": "^2.1.0",
+    "@types/winston": "^2.4.4",
+    "apollo-server-azure-functions": "^2.2.4",
+    "date-fns": "^1.29.0",
+    "event-debug": "^2.0.0",
+    "graphql": "^14.0.2",
+    "graphql-iso-date": "^3.6.1",
+    "graphql-tag": "^2.10.0",
+    "graphql-tools": "^4.0.3",
+    "hashids": "^1.2.2",
+    "irc": "^0.5.2",
+    "lodash": "^4.17.11",
+    "mongoose": "^5.3.13",
+    "serialize-error": "^3.0.0",
+    "typescript": "^3.1.6",
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.9",
+    "azure-functions-pack": "^1.0.0",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.5",
+    "ts-node": "^7.0.1",
+    "tslint-config-prettier": "^1.16.0",
+    "tslint-react": "^3.6.0"
+  }
+}
