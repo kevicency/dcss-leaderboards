@@ -145,9 +145,6 @@ export class RankingsView extends React.Component<RankingsViewProps> {
             )
           }
 
-          // tslint:disable-next-line:no-console
-          console.log(data)
-
           return (
             <Box flex="1">
               <FancyList
