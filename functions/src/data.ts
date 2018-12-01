@@ -114,7 +114,10 @@ export const bots = ['bot']
 
 export const accounts = {
   manman: ['FastMan', 'pureman'],
-  NormalPerson7: ['SpeedyPerson7'],
+  NormalPerson7: ['SpeedyPerson7', 'NormalPerson7T'],
+  Demise: ['AllRandomAllDemise', 'DemiseSR'],
+  YTcomUltraviolent4: ['Ultraviolent4'],
+  MeekVeins: ['SpeedVeins'],
 }
 export const playerByAccount = Object.keys(accounts).reduce(
   (memo, player) => {
