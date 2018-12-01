@@ -3,12 +3,10 @@ import {
   loadTheme as loadFabricTheme,
 } from 'office-ui-fabric-react/lib/Styling'
 
-type Theme = ITheme & {
+export type Theme = ITheme & {
   space?: number[]
   breakpoints?: number[]
 }
-
-export { Theme }
 
 export const loadTheme = (fabricOverrides: Partial<ITheme> = {}): Theme => ({
   ...loadFabricTheme(fabricOverrides),

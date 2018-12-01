@@ -31,7 +31,7 @@ const Box = grid.Box as BoxComponentWithTheme
 const Flex = grid.Flex as FlexComponentWithTheme
 
 export default styled
-export { css, keyframes, Theme, ThemeProvider }
+export { css, keyframes, ThemeProvider }
 export { Flex, Box }
 
 export function cssify(style: IRawStyle) {

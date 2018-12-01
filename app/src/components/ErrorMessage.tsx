@@ -1,6 +1,6 @@
-import { Bold } from 'components'
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react'
 import * as React from 'react'
+import { Bold } from '../components'
 
 export const ErrorMessage = ({
   message,

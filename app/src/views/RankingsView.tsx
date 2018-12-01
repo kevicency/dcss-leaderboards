@@ -1,6 +1,4 @@
-import { gql } from 'apollo-boost'
-import { ErrorMessage, FancyList, FlexSpinner } from 'components'
-import { BronzeTrophy, GoldTrophy, SilverTrophy } from 'components/Trophy'
+import { gql, OperationVariables } from 'apollo-boost'
 import {
   DetailsListLayoutMode,
   IColumn,
@@ -10,7 +8,9 @@ import {
 import * as React from 'react'
 import { Query, QueryResult } from 'react-apollo'
 import { InjectedRouterNode, routeNode } from 'react-router5'
-import { Box } from 'styled'
+import { ErrorMessage, FancyList, FlexSpinner } from '../components'
+import { BronzeTrophy, GoldTrophy, SilverTrophy } from '../components/Trophy'
+import { Box } from '../styled'
 
 const GET_RANKINGS = gql`
   query RankingsQuery($by: RankingType!) {
@@ -126,9 +126,10 @@ export class RankingsView extends React.Component<RankingsViewProps> {
   public render() {
     const { route } = this.props
     const by = route.name.split('.')[1]
+    const variables = { by } as OperationVariables
 
     return (
-      <Query query={GET_RANKINGS} variables={{ by }}>
+      <Query query={GET_RANKINGS} variables={variables}>
         {({ loading, error, data }: QueryResult) => {
           if (loading) {
             return <FlexSpinner flex="1" />

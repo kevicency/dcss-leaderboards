@@ -1,9 +1,9 @@
-import { GithubLogo } from 'assets/github'
 import { Icon } from 'office-ui-fabric-react'
 import * as React from 'react'
-import styled, { Box, Flex } from 'styled'
-import t from 'theme'
+import { GithubLogo } from '../assets/github'
 import stonesoup from '../assets/stonesoup.png'
+import styled, { Box, Flex } from '../styled'
+import t from '../theme'
 import { ContentContainer } from './Layout'
 
 const Container = styled(Box)`

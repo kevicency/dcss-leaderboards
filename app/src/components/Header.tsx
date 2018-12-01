@@ -1,12 +1,11 @@
 // tslint:disable:jsx-no-lambda
 
-import { ContentContainer } from 'components'
 import { Pivot, PivotItem } from 'office-ui-fabric-react'
 import * as React from 'react'
-import { withRoute } from 'react-router5'
-import { RouteDefinition, Router } from 'router'
-import styled, { cssify, Flex } from 'styled'
+import { InjectedRouterNode, withRoute } from 'react-router5'
 import logo from '../assets/speedcrawl.png'
+import { ContentContainer } from '../components'
+import styled, { cssify, Flex } from '../styled'
 
 const Container = styled.div`
   background: ${({ theme }) => theme.palette.neutralLight};
@@ -27,10 +26,7 @@ const Title = styled.h1`
   }
 `
 
-export interface HeaderProps {
-  router?: Router
-  route?: RouteDefinition
-}
+export type HeaderProps = Partial<InjectedRouterNode> & {}
 export const Header = withRoute(({ router, route }: HeaderProps) => (
   <Container>
     <ContentContainer px={2} justifyContent="space-between" flexWrap="wrap">

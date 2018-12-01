@@ -17,24 +17,30 @@
     "react-apollo": "^2.3.2",
     "react-dom": "^16.6.3",
     "react-router5": "^6.5.3",
-    "react-scripts-ts": "3.1.0",
+    "react-scripts": "^2.1.1",
     "router5": "^6.6.2",
     "router5-react": "^0.1.6",
     "styled-components": "^4.1.2"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
     "predeploy": "env-cmd .env.deploy yarn build",
     "deploy": "az storage blob upload-batch --destination \"\\$web\" --source build --connection-string \"$SPEEDCRAWL_STORAGE\""
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
-    "@types/node": "^10.12.10",
-    "@types/react": "^16.7.8",
+    "@types/node": "^10.12.11",
+    "@types/react": "^16.7.11",
     "@types/react-dom": "^16.0.11",
-    "typescript": "^3.1.6"
-  }
+    "typescript": "^3.2.1"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

@@ -10,7 +10,7 @@ import {
   SelectionMode,
 } from 'office-ui-fabric-react'
 import * as React from 'react'
-import styled from 'styled'
+import styled from '../styled'
 
 function sortByColumn<T>(items: T[], sortColumn: IColumn) {
   if (sortColumn) {
@@ -22,7 +22,7 @@ function sortByColumn<T>(items: T[], sortColumn: IColumn) {
   return items
 }
 
-const StyledDetailsList = styled(DetailsList)`
+const Container = styled.div`
   .ms-DetailsRow-cell {
     color: ${({ theme }) => theme.palette.neutralPrimaryAlt};
   }
@@ -68,18 +68,20 @@ export class FancyList<T = any> extends React.Component<
     const { onSelectionChanged, items, ...listProps } = this.props
 
     return (
-      <StyledDetailsList
-        selectionMode={SelectionMode.single}
-        layoutMode={DetailsListLayoutMode.justified}
-        isHeaderVisible={true}
-        setKey="entities"
-        {...listProps}
-        items={this.state.sortedItems}
-        columns={this.state.columns}
-        groups={this.state.groups}
-        selection={this.selection}
-        onColumnHeaderClick={this.handleColumnHeaderClick}
-      />
+      <Container>
+        <DetailsList
+          selectionMode={SelectionMode.single}
+          layoutMode={DetailsListLayoutMode.justified}
+          isHeaderVisible={true}
+          setKey="entities"
+          {...listProps}
+          items={this.state.sortedItems}
+          columns={this.state.columns}
+          groups={this.state.groups}
+          selection={this.selection}
+          onColumnHeaderClick={this.handleColumnHeaderClick}
+        />
+      </Container>
     )
   }
 

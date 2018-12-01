@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Box } from 'styled'
+import { Box } from '../styled'
 
 export const Error404View = () => (
   <Box py={4} flex="1">

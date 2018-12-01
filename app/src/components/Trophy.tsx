@@ -1,5 +1,5 @@
 import { Icon } from 'office-ui-fabric-react'
-import styled from 'styled'
+import styled from '../styled'
 
 export const Trophy = styled(Icon).attrs({ iconName: 'Trophy2Solid' })`
   margin-right: 3px;

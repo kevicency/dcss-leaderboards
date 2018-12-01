@@ -3,7 +3,6 @@ import createRouter5, { Route as Router5Route, Router } from 'router5'
 import { Options } from 'router5/create-router'
 import browserPlugin from 'router5/plugins/browser'
 import loggerPlugin from 'router5/plugins/logger'
-export { Params, Router, State } from 'router5'
 
 export type RouteDefinition = Omit<Router5Route, 'children'> & {
   component?: any

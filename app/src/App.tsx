@@ -1,9 +1,9 @@
-import { ContentContainer, Footer, Header } from 'components'
 import { Fabric } from 'office-ui-fabric-react'
 import * as React from 'react'
 import { InjectedRouterNode, RouteNode } from 'react-router5'
-import styled, { Flex } from 'styled'
-import { Error404View, RankingsView } from 'views'
+import { ContentContainer, Footer, Header } from './components'
+import styled, { Flex } from './styled'
+import { Error404View, RankingsView } from './views'
 
 const Body = styled(Flex)`
   min-height: 100vh;

@@ -1,4 +1,4 @@
-import styled, { Flex } from 'styled'
+import styled, { Flex } from '../styled'
 
 export const ContentContainer = styled(Flex)`
   width: 100%;
