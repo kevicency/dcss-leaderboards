@@ -1,6 +1,9 @@
 import * as mongoose from 'mongoose'
-import { SpeedrunRankingsAggregateJob, SpeedrunSequellSyncJob } from './jobs'
-import { SpeedrunSyncJobFlags } from './jobs/sync'
+import {
+  SpeedrunRankingsAggregateJob,
+  SpeedrunSequellSyncJob,
+  SpeedrunVideoUpdateJob,
+} from './jobs'
 import { createLogger } from './logger'
 import { IrcSequell, Sequell } from './sequell'
 
@@ -31,23 +34,28 @@ async function sync(force: boolean = false) {
     ),
   ])
 
-  const limit = 10
+  const limit = 25
   const jobs = [
     new SpeedrunSequellSyncJob(sequell, {
-      flags: SpeedrunSyncJobFlags.Players,
+      // flags: SpeedrunSyncJobFlags.Players,
       playerLimit: limit,
     }),
     new SpeedrunRankingsAggregateJob({
+      // types: [RankingType.Player],
       limit,
     }),
+    new SpeedrunVideoUpdateJob(),
   ]
 
-  return jobs
-    .slice(1, 2)
-    .reduce(
-      (promise, job) => promise.then(job.start.bind(job)),
-      Promise.resolve()
-    )
+  return (
+    jobs
+      // .slice(1, 2)
+      // .slice(2, 3)
+      .reduce(
+        (promise, job) => promise.then(job.start.bind(job)),
+        Promise.resolve()
+      )
+  )
 }
 
 if (/sync.ts$/.test(__filename)) {

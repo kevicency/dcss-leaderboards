@@ -128,3 +128,9 @@ export const playerByAccount = Object.keys(accounts).reduce(
   },
   {} as { [account: string]: string }
 )
+
+export const videos = {
+  'P0WERM0DE:cue:20180712164931S':
+    'https://www.youtube.com/watch?v=yq3XAXpSK7g',
+  'ezero:cjr:20180519223620S': 'https://www.youtube.com/watch?v=OONO__mkMXs',
+}
