@@ -33,6 +33,11 @@ const routes: RouteDefinition[] = [
     ],
   },
   {
+    name: 'index-html',
+    path: '/index.html',
+    forwardTo: 'rankings.player',
+  },
+  {
     name: constants.UNKNOWN_ROUTE,
     path: '/404',
     component: 'Error 404',
