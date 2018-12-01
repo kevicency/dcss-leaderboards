@@ -4,5 +4,5 @@ export const ContentContainer = styled(Flex)`
   width: 100%;
   max-width: 1024px;
   margin: 0 auto;
-  overflow-y: scroll;
+  overflow-y: auto;
 `
