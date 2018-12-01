@@ -110,23 +110,11 @@ export const gods = [
   'The Shining One',
 ]
 
-export const bots = [
-  'qw',
-  'AutoCrawlBot',
-  'khrogbot',
-  'cloudy120',
-  'RushXXI',
-  'LAYA',
-  'tstbtto',
-  'Patr1k',
-  'kgb0614',
-  'Chaobot',
-  'Cosagabot',
-  'Patr1k',
-]
+export const bots = ['bot']
 
 export const accounts = {
   manman: ['FastMan', 'pureman'],
+  NormalPerson7: ['SpeedyPerson7'],
 }
 export const playerByAccount = Object.keys(accounts).reduce(
   (memo, player) => {
