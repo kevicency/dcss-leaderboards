@@ -27,6 +27,7 @@ const GET_COMBO_HIGHSCORES = gql`
       player
       race
       points
+      turns
     }
   }
 `
