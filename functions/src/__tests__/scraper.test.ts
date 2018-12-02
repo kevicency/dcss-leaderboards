@@ -17,6 +17,6 @@ describe('ComboHighscoreParser', async () => {
     console.log(result[0])
 
     expect(result).toBeTruthy()
-    expect(result.length).toBe(data.races.length * data.backgrounds.length - 5)
+    expect(result.length).toBe(data.races.length * data.backgrounds.length - 7)
   })
 })

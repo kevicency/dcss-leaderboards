@@ -43,7 +43,8 @@ export class ComboHighscoreParser {
 
     if (
       data.races.indexOf(race) === -1 ||
-      data.backgrounds.indexOf(cls) === -1
+      data.backgrounds.indexOf(cls) === -1 ||
+      data.comboBlacklist.indexOf(combo) !== -1
     ) {
       return null
     }

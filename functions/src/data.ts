@@ -55,6 +55,8 @@ export const races = [
   'Vp',
 ]
 
+export const comboBlacklist = ['FeAS', 'GhTm', 'MuTm']
+
 export const godKeywords = [
   'Ashenzari',
   'Beogh',
