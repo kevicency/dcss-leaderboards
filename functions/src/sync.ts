@@ -4,6 +4,7 @@ import {
   SpeedrunSequellSyncJob,
   SpeedrunVideoUpdateJob,
 } from './jobs'
+import { ComboHighscoreSyncJob } from './jobs/sync'
 import { createLogger } from './logger'
 import { IrcSequell, Sequell } from './sequell'
 
@@ -45,11 +46,12 @@ async function sync(force: boolean = false) {
       limit,
     }),
     new SpeedrunVideoUpdateJob(),
+    new ComboHighscoreSyncJob(),
   ]
 
   return (
     jobs
-      // .slice(1, 2)
+      .slice(3, 4)
       // .slice(2, 3)
       .reduce(
         (promise, job) => promise.then(job.start.bind(job)),

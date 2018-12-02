@@ -16,14 +16,17 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/cheerio": "^0.22.10",
     "@types/graphql-iso-date": "^3.3.1",
     "@types/hashids": "^1.0.30",
     "@types/irc": "^0.3.32",
     "@types/lodash": "^4.14.118",
     "@types/mongoose": "^5.3.1",
+    "@types/request-promise": "^4.1.42",
     "@types/serialize-error": "^2.1.0",
     "@types/winston": "^2.4.4",
     "apollo-server-azure-functions": "^2.2.4",
+    "cheerio": "^1.0.0-rc.2",
     "date-fns": "^1.29.0",
     "event-debug": "^2.0.0",
     "graphql": "^14.0.2",
@@ -34,6 +37,7 @@
     "irc": "^0.5.2",
     "lodash": "^4.17.11",
     "mongoose": "^5.3.13",
+    "request-promise": "^4.2.2",
     "serialize-error": "^3.0.0",
     "typescript": "^3.1.6",
     "winston": "^3.1.0"

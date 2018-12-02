@@ -29,6 +29,7 @@ export const typeDefs = gql`
 
   type Query {
     rankings(by: RankingType!): [Speedrun]
+    comboHighscores: [Speedrun]
   }
 `
 export default typeDefs

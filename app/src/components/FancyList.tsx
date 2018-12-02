@@ -156,7 +156,7 @@ export class FancyList<T = any> extends React.Component<
         ? {
             groupColumn: {
               ...column,
-              isGrouped: true,
+              isGrouped: !column.isGrouped,
             },
           }
         : {

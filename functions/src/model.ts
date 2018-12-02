@@ -1,11 +1,11 @@
 import { Document, model, Schema } from 'mongoose'
 import { lgResult } from './sequell/sequell'
 
-export type Speedrun = lgResult & {
+export type ISpeedrun = lgResult & {
   morgue: String
   vod: String
 }
-export interface SpeedrunDocument extends Document {}
+export interface SpeedrunDocument extends Document, ISpeedrun {}
 
 export const SpeedrunSchema = new Schema({
   account: String,
@@ -33,6 +33,7 @@ export const Speedrun = model<SpeedrunDocument>(
   'speedruns',
   true
 )
+export type Speedrun = typeof Speedrun
 export const RankingByPlayer = model<SpeedrunDocument>(
   'Speedrun',
   SpeedrunSchema,
@@ -57,6 +58,13 @@ export const RankingByGod = model<SpeedrunDocument>(
   'Speedrun',
   SpeedrunSchema,
   'rankingsByGod',
+  true
+)
+
+export const ComboHighscore = model<SpeedrunDocument>(
+  'Speedrun',
+  SpeedrunSchema,
+  'comboHighscores',
   true
 )
 

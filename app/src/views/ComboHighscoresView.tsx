@@ -1,4 +1,4 @@
-import { gql, OperationVariables } from 'apollo-boost'
+import { gql } from 'apollo-boost'
 import {
   DetailsListLayoutMode,
   IColumn,
@@ -7,46 +7,33 @@ import {
 } from 'office-ui-fabric-react'
 import * as React from 'react'
 import { Query, QueryResult } from 'react-apollo'
-import { InjectedRouterNode, routeNode } from 'react-router5'
 import { ErrorMessage, FancyList, FlexSpinner } from '../components'
-import { BronzeTrophy, GoldTrophy, SilverTrophy } from '../components/Trophy'
 import { Box } from '../styled'
 
-const GET_RANKINGS = gql`
-  query RankingsQuery($by: RankingType!) {
-    rankings(by: $by) {
+const GET_COMBO_HIGHSCORES = gql`
+  query ComboHighscoresQuery {
+    comboHighscores {
       background
       date
       duration
+      gid
       god
       morgue
       player
       race
-      vod
+      points
     }
   }
 `
 
 const columns: IColumn[] = [
   {
-    key: 'position',
-    name: 'Pos',
-    fieldName: 'position',
-    minWidth: 20,
-    maxWidth: 20,
+    key: 'gid',
+    name: 'Combo',
+    fieldName: 'gid',
+    minWidth: 40,
+    maxWidth: 40,
     isResizable: true,
-    onRender: item => {
-      switch (item.position) {
-        case 1:
-          return <GoldTrophy />
-        case 2:
-          return <SilverTrophy />
-        case 3:
-          return <BronzeTrophy />
-        default:
-          return <span>{item.position}</span>
-      }
-    },
   },
   {
     key: 'player',
@@ -57,14 +44,22 @@ const columns: IColumn[] = [
     isResizable: true,
   },
   {
+    key: 'points',
+    name: 'Points',
+    fieldName: 'points',
+    minWidth: 80,
+    maxWidth: 80,
+    isResizable: true,
+    isSorted: true,
+    isSortedDescending: false,
+  },
+  {
     key: 'duration',
     name: 'Time',
     fieldName: 'duration',
     minWidth: 50,
     maxWidth: 50,
     isResizable: true,
-    isSorted: true,
-    isSortedDescending: true,
   },
   {
     key: 'race',
@@ -94,8 +89,7 @@ const columns: IColumn[] = [
     key: 'morgue',
     name: 'Morgue',
     fieldName: 'morgue',
-    minWidth: 80,
-    maxWidth: 80,
+    minWidth: 70,
     isResizable: true,
     onRender: item =>
       item.morgue ? (
@@ -104,32 +98,16 @@ const columns: IColumn[] = [
         </Link>
       ) : null,
   },
-  {
-    key: 'vod',
-    name: 'Video',
-    fieldName: 'vod',
-    minWidth: 90,
-    isResizable: true,
-    onRender: item =>
-      item.vod ? (
-        <Link href={item.vod} target="_blank">
-          Youtube
-        </Link>
-      ) : null,
-  },
 ]
 
-export type RankingsViewProps = Partial<InjectedRouterNode> & {}
+export type ComboHighscorsesViewProps = {}
 
-@(routeNode as any)('rankings') // todo compiler pls
-export class RankingsView extends React.Component<RankingsViewProps> {
+export class ComboHighscoresView extends React.Component<
+  ComboHighscorsesViewProps
+> {
   public render() {
-    const { route } = this.props
-    const by = route.name.split('.')[1]
-    const variables = { by } as OperationVariables
-
     return (
-      <Query query={GET_RANKINGS} variables={variables}>
+      <Query query={GET_COMBO_HIGHSCORES}>
         {({ loading, error, data }: QueryResult) => {
           if (loading) {
             return <FlexSpinner flex="1" />
@@ -150,37 +128,16 @@ export class RankingsView extends React.Component<RankingsViewProps> {
               <FancyList
                 selectionMode={SelectionMode.none}
                 layoutMode={DetailsListLayoutMode.justified}
-                items={data.rankings.map((x: any, i: number) => ({
+                items={data.comboHighscores.map((x: any, i: number) => ({
                   ...x,
                   position: i + 1,
                 }))}
-                columns={this.getColumns(by)}
+                columns={columns}
               />
             </Box>
           )
         }}
       </Query>
     )
-  }
-
-  private getColumns(rankingType: string) {
-    if (rankingType !== 'player') {
-      const rankingColumnIdx = columns.findIndex(
-        x => x.fieldName === rankingType
-      )
-
-      if (rankingColumnIdx !== -1) {
-        const rankingColumn = columns[rankingColumnIdx]
-
-        return [
-          ...columns.slice(0, 1),
-          rankingColumn,
-          ...columns.slice(1, rankingColumnIdx),
-          ...columns.slice(rankingColumnIdx + 1),
-        ]
-      }
-    }
-
-    return columns
   }
 }

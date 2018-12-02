@@ -2,7 +2,8 @@ import { EventEmitter } from 'events'
 import { noop, Omit } from 'lodash'
 import * as data from '../data'
 import { createLogger } from '../logger'
-import { Speedrun } from '../model'
+import { ComboHighscore, Speedrun } from '../model'
+import { Scraper, WebScraper } from '../scraper'
 import { lgQuery, Sequell, SequellResult } from '../sequell'
 import { Job } from './job'
 
@@ -250,5 +251,31 @@ export class SpeedrunSequellSyncJob implements Job {
 
   private hasFlag(flag: SpeedrunSyncJobFlags) {
     return (this.flags & flag) === flag
+  }
+}
+
+export class ComboHighscoreSyncJob implements Job {
+  private scraper: Scraper = new WebScraper()
+
+  constructor(options: { scraper?: Scraper } = {}) {
+    this.scraper = options.scraper || new WebScraper()
+  }
+
+  public async start() {
+    logger.debug('starting combo highscore job...')
+    const speedruns = await this.scraper.fetchComboHighscores()
+
+    logger.debug(`fetched ${speedruns.length} speedruns. Persisting...`)
+
+    for (const speedrun of speedruns) {
+      await ComboHighscore.updateOne(
+        {
+          gid: speedrun.gid,
+        },
+        speedrun,
+        { upsert: true, setDefaultsOnInsert: true }
+      )
+    }
+    logger.debug('combo highscore job done.')
   }
 }
