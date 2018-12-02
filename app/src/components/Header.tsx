@@ -9,7 +9,7 @@ import styled, { cssify, Flex } from '../styled'
 
 const Container = styled.div`
   background: ${({ theme }) => theme.palette.neutralLight};
-  overflow: hidden;
+  > * { overflow: hidden; }
   /* color: ${({ theme }) => theme.palette.white}; */
 `
 const TitleContainer = styled(Flex)`

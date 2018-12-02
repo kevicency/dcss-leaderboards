@@ -9,7 +9,7 @@ const Body = styled(Flex)`
   min-height: 100vh;
   width: 100vw;
 
-  overflow-x: auto;
+  overflow-x: hidden;
 `
 
 class App extends React.Component {

@@ -53,7 +53,7 @@ const columns: IColumn[] = [
     name: 'Player',
     fieldName: 'player',
     minWidth: 75,
-    maxWidth: 125,
+    maxWidth: 100,
     isResizable: true,
   },
   {
@@ -86,7 +86,7 @@ const columns: IColumn[] = [
     key: 'god',
     name: 'God',
     fieldName: 'god',
-    minWidth: 100,
+    minWidth: 90,
     maxWidth: 100,
     isResizable: true,
   },
@@ -94,8 +94,8 @@ const columns: IColumn[] = [
     key: 'morgue',
     name: 'Morgue',
     fieldName: 'morgue',
-    minWidth: 100,
-    maxWidth: 100,
+    minWidth: 90,
+    maxWidth: 90,
     isResizable: true,
     onRender: item =>
       item.morgue ? (
@@ -108,7 +108,7 @@ const columns: IColumn[] = [
     key: 'vod',
     name: 'Video',
     fieldName: 'vod',
-    minWidth: 100,
+    minWidth: 90,
     isResizable: true,
     onRender: item =>
       item.vod ? (
