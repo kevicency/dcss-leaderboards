@@ -9,7 +9,7 @@ export interface ISequellParser {
 }
 
 export class SequellParser implements ISequellParser {
-  lgRegex = /^\d+\. \[game_key=([\w:]+)\] (\w+) the ([\w\s]+) \(L(\d+) (\w+)( of ([\w\s]+))?\), escaped [\w\s]+ on ([\d\s-:]+), with (\d+) points after (\d+) turns and ([\d:]+)\./
+  lgRegex = /^\d+\. \[game_key=([\w:]+)\] (\w+) the ([\w\s]+) \(L(\d+) (\w+)( of ([\w\s]+))?\), escaped with the Orb and (\d+) runes on ([\d\s-:]+), with (\d+) points after (\d+) turns and ([\d:]+)\./
   logRegex = /^\d+\. (\w+), XL(\d+) (\w+), T:(\d+): (.+)$/
   logDateRegex = /.*(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2}).*/
   timoeutRegex = /\d+s limit exceeded: killed (.+)/
@@ -36,10 +36,11 @@ export class SequellParser implements ISequellParser {
           xl: +match[4],
           ...this.parseCharacter(match[5]),
           god: match[7],
-          date: new Date(`${match[8].replace(' ', 'T')}Z`),
-          points: +match[9],
-          turns: +match[10],
-          duration: match[11],
+          runes: +match[8],
+          date: new Date(`${match[9].replace(' ', 'T')}Z`),
+          points: +match[10],
+          turns: +match[11],
+          duration: match[12],
         }
       }
     }

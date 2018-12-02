@@ -21,6 +21,7 @@ test('serialize lg', () => {
     background: 'Fi',
     god: 'Oka',
     min: 'dur',
+    runes: 15,
   }
   const playerQuery = {
     ...starQuery,
@@ -31,12 +32,14 @@ test('serialize lg', () => {
     playerBlacklist: ['manman', 'qw'],
   }
 
-  expect(sut.lgSerialize(starQuery)).toBe('!lg * win x=gid MiFi Oka min=dur')
+  expect(sut.lgSerialize(starQuery)).toBe(
+    '!lg * win x=gid MiFi Oka min=dur urune=15'
+  )
   expect(sut.lgSerialize(playerQuery)).toBe(
-    '!lg MeekVeins win x=gid MiFi Oka min=dur'
+    '!lg MeekVeins win x=gid MiFi Oka min=dur urune=15'
   )
   expect(sut.lgSerialize(blacklistQuery)).toBe(
-    '!lg * win x=gid MiFi Oka min=dur !@manman !@FastMan !@pureman !@qw'
+    '!lg * win x=gid MiFi Oka min=dur urune=15 !@manman !@FastMan !@pureman !@qw'
   )
 })
 

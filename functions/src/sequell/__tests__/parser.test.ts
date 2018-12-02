@@ -18,6 +18,7 @@ test('parse lg', () => {
     player: 'idfk',
     points: 1998358,
     race: 'DD',
+    runes: 3,
     title: 'Impregnable',
     turns: 52035,
     type: 'lg',

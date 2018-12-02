@@ -37,6 +37,10 @@ export class SequellSerializer implements ISequellSerializer {
       message = `${message} min=${query.min}`
     }
 
+    if (query.runes) {
+      message = `${message} urune=${query.runes}`
+    }
+
     if (query.playerBlacklist) {
       const accountBlacklist = uniq(
         query.playerBlacklist.reduce(

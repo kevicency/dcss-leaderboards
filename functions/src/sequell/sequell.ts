@@ -18,6 +18,7 @@ export type lgQuery = CharacterQuery & {
   player?: string
   playerBlacklist?: string[]
   min?: string
+  runes?: number
 }
 
 export type logQuery = {
@@ -39,6 +40,7 @@ export type lgResult = {
   race: string
   title: string
   turns: number
+  runes: number
   xl: number
 }
 export type logResult = {
