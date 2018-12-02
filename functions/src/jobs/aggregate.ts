@@ -1,26 +1,26 @@
 import { createLogger } from '../logger'
 import {
-  Rankings,
-  RankingType,
-  rankingTypeToField,
-  Speedrun,
-  SpeedrunAggregations,
+  AggregationField,
+  GameInfo,
+  GameInfoAggregations,
+  getAggregationFieldName,
+  Speedruns,
 } from '../model'
 import { Job } from './job'
 
 const logger = createLogger('aggregate')
 
 export class SpeedrunRankingsAggregateJob implements Job {
-  public types: RankingType[]
+  public types: AggregationField[]
   public limit: number
 
-  constructor(args: { limit?: number; types?: RankingType[] } = {}) {
+  constructor(args: { limit?: number; types?: AggregationField[] } = {}) {
     this.limit = args.limit
     this.types = args.types || [
-      RankingType.Player,
-      RankingType.Race,
-      RankingType.Background,
-      RankingType.God,
+      AggregationField.Player,
+      AggregationField.Race,
+      AggregationField.Background,
+      AggregationField.God,
     ]
   }
 
@@ -29,11 +29,11 @@ export class SpeedrunRankingsAggregateJob implements Job {
 
     return this.types
       .reduce((memo, type) => {
-        const field = rankingTypeToField(type)
+        const field = getAggregationFieldName(type)
         const aggregate = async () => {
           logger.debug(`running aggregation for ${field}`)
 
-          const collection = Rankings[type].collection
+          const collection = Speedruns[type].collection
           logger.debug(`dropping collection ${collection.name}`)
 
           try {
@@ -43,14 +43,14 @@ export class SpeedrunRankingsAggregateJob implements Job {
             /* ignore */
           }
 
-          const aggregations = SpeedrunAggregations.generateRankingsBy(
+          const aggregations = GameInfoAggregations.aggregateSpeedrunBy(
             field,
-            type === RankingType.Player ? this.limit : null
+            type === AggregationField.Player ? this.limit : null
           )
 
           console.log(aggregations)
 
-          await Speedrun.aggregate(aggregations).exec()
+          await GameInfo.aggregate(aggregations).exec()
           logger.debug(`aggregations for ${field} done.`)
 
           return

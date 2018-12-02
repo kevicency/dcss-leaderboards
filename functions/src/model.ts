@@ -1,13 +1,14 @@
+import { capitalize } from 'lodash'
 import { Document, model, Schema } from 'mongoose'
 import { lgResult } from './sequell/sequell'
 
-export type ISpeedrun = lgResult & {
+export type GameInfoValues = lgResult & {
   morgue: String
   vod: String
 }
-export interface SpeedrunDocument extends Document, ISpeedrun {}
+export interface GameInfoDocument extends Document, GameInfoValues {}
 
-export const SpeedrunSchema = new Schema({
+export const GameInfoSchema = new Schema({
   account: String,
   background: String,
   date: Date,
@@ -27,62 +28,62 @@ export const SpeedrunSchema = new Schema({
   vod: String,
 })
 
-export const Speedrun = model<SpeedrunDocument>(
+export const GameInfo = model<GameInfoDocument>(
   'Speedrun',
-  SpeedrunSchema,
+  GameInfoSchema,
   'speedruns',
   true
 )
-export type Speedrun = typeof Speedrun
-export const RankingByPlayer = model<SpeedrunDocument>(
+export type GameInfo = typeof GameInfoSchema
+
+export const SpeedrunByPlayer = model<GameInfoDocument>(
   'Speedrun',
-  SpeedrunSchema,
-  'rankingsByPlayer',
+  GameInfoSchema,
+  'speedrunsByPlayer',
   true
 )
-export const RankingByBackground = model<SpeedrunDocument>(
+export const SpeedrunByBackground = model<GameInfoDocument>(
   'Speedrun',
-  SpeedrunSchema,
-  'rankingsByBackground',
+  GameInfoSchema,
+  'speedrunsByBackground',
   true
 )
 
-export const RankingByRace = model<SpeedrunDocument>(
+export const SpeedrunByRace = model<GameInfoDocument>(
   'Speedrun',
-  SpeedrunSchema,
-  'rankingsByRace',
+  GameInfoSchema,
+  'speedrunsByRace',
   true
 )
 
-export const RankingByGod = model<SpeedrunDocument>(
+export const SpeedrunByGod = model<GameInfoDocument>(
   'Speedrun',
-  SpeedrunSchema,
-  'rankingsByGod',
+  GameInfoSchema,
+  'speedrunsByGod',
   true
 )
 
-export const ComboHighscore = model<SpeedrunDocument>(
+export const ComboHighscore = model<GameInfoDocument>(
   'Speedrun',
-  SpeedrunSchema,
+  GameInfoSchema,
   'comboHighscores',
   true
 )
 
-export enum RankingType {
+export enum AggregationField {
   Player = 'player',
   Race = 'race',
   Background = 'background',
   God = 'god',
 }
 
-export const Rankings = {
-  [RankingType.Player]: RankingByPlayer,
-  [RankingType.Race]: RankingByRace,
-  [RankingType.Background]: RankingByBackground,
-  [RankingType.God]: RankingByGod,
+export const Speedruns = {
+  [AggregationField.Player]: SpeedrunByPlayer,
+  [AggregationField.Race]: SpeedrunByRace,
+  [AggregationField.Background]: SpeedrunByBackground,
+  [AggregationField.God]: SpeedrunByGod,
 }
 
-export const rankingTypeToField = (type: RankingType) => type
 const fieldNames = [
   'account',
   'background',
@@ -99,10 +100,12 @@ const fieldNames = [
   'xl',
   'vod',
 ]
+export const getAggregationFieldName = (aggregationField: AggregationField) =>
+  aggregationField
 
-export const SpeedrunAggregations = {
-  generateRankingsBy: (type: RankingType, limit?: number) => {
-    const field = rankingTypeToField(type)
+export const GameInfoAggregations = {
+  aggregateSpeedrunBy: (aggregationField: AggregationField, limit?: number) => {
+    const aggregationFieldName = getAggregationFieldName(aggregationField)
 
     return [
       {
@@ -118,7 +121,7 @@ export const SpeedrunAggregations = {
             return memo
           },
           {
-            _id: `$${field}`,
+            _id: `$${aggregationFieldName}`,
           }
         ),
       },
@@ -163,7 +166,7 @@ export const SpeedrunAggregations = {
           ]
         : []),
       {
-        $out: `rankingsBy${field[0].toUpperCase()}${field.slice(1)}`,
+        $out: `speedrunsBy${capitalize(aggregationFieldName)}`,
       },
     ]
   },

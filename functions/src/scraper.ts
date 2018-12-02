@@ -1,10 +1,10 @@
 import * as $ from 'cheerio'
 import * as request from 'request-promise'
 import * as data from './data'
-import { ISpeedrun } from './model'
+import { GameInfoValues } from './model'
 
 export interface Scraper {
-  fetchComboHighscores(): Promise<ISpeedrun[]>
+  fetchComboHighscores(): Promise<GameInfoValues[]>
 }
 export class WebScraper implements Scraper {
   private parser = new ComboHighscoreParser()
@@ -21,7 +21,7 @@ export class WebScraper implements Scraper {
 export class ComboHighscoreParser {
   private morgueRegex = /.*href="(.*)">.*/
 
-  public parse(html: string): ISpeedrun[] {
+  public parse(html: string): GameInfoValues[] {
     const $html = $(html)
 
     const $rows = $html.find('table.bordered tr').toArray()
@@ -29,7 +29,7 @@ export class ComboHighscoreParser {
     return $rows.map(this.parseRow).filter(Boolean)
   }
 
-  private parseRow = ($row: CheerioElement): ISpeedrun => {
+  private parseRow = ($row: CheerioElement): GameInfoValues => {
     const $tds = $row.children.filter(x => x.name === 'td')
 
     if ($tds.length === 0) {

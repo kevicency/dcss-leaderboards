@@ -1,47 +1,37 @@
 import { EventEmitter } from 'events'
-import { noop, Omit } from 'lodash'
+import { noop, Omit, values } from 'lodash'
 import * as data from '../data'
 import { createLogger } from '../logger'
-import { ComboHighscore, Speedrun } from '../model'
+import { AggregationField, ComboHighscore, GameInfo } from '../model'
 import { Scraper, WebScraper } from '../scraper'
 import { lgQuery, Sequell, SequellResult } from '../sequell'
 import { Job } from './job'
 
 const logger = createLogger('sync')
 
-export enum SpeedrunSyncJobFlags {
-  None = 0,
-  Players = 1,
-  Races = 2 << 0,
-  Backgrounds = 2 << 1,
-  Gods = 2 << 2,
-
-  All = Players | Races | Backgrounds | Gods,
-}
-
-export class SpeedrunSyncJobQueue {
+export class GameInfoSyncJobQueue {
   public races: string[] = [...data.races]
   public backgrounds: string[] = [...data.backgrounds]
   public gods: string[] = [...data.godKeywords]
   public topPlayers: string[] = []
 }
-export interface SpeedrunSequellSyncJobOptions {
+export interface GameInfoSyncJobOptions {
   onError?(err: any): void
   onTimeout?(query: any): void
   onFinished?(): void
   delay?: number
   timeout?: number
   playerLimit?: number
-  flags?: SpeedrunSyncJobFlags
+  aggregations?: AggregationField[]
 }
 
-export class SpeedrunSequellSyncJob implements Job {
+export class GameInfoSyncJob implements Job {
   private $resolve: any
   private sequell: Sequell
-  private queue: SpeedrunSyncJobQueue
+  private queue: GameInfoSyncJobQueue
   private emitter: EventEmitter
   private tid: NodeJS.Timeout
-  private flags: SpeedrunSyncJobFlags
+  private aggregations: AggregationField[]
   private killedMessages: string[] = []
   public playerLimit: number
 
@@ -57,15 +47,16 @@ export class SpeedrunSequellSyncJob implements Job {
       delay,
       timeout,
       playerLimit,
-      flags,
-    }: SpeedrunSequellSyncJobOptions = {}
+      aggregations,
+    }: GameInfoSyncJobOptions = {}
   ) {
     this.sequell = sequell
     this.delay = delay || 1000
     this.timeout = timeout || 95000
     this.playerLimit = playerLimit || 10
-    this.flags = flags || SpeedrunSyncJobFlags.All
-    this.queue = new SpeedrunSyncJobQueue()
+    this.aggregations =
+      aggregations || (values(AggregationField) as AggregationField[])
+    this.queue = new GameInfoSyncJobQueue()
     this.emitter = new EventEmitter()
     this.emitter.on('timeout', onTimeout || noop)
     this.emitter.on('error', onError || noop)
@@ -102,7 +93,7 @@ export class SpeedrunSequellSyncJob implements Job {
 
     if (result.type !== 'log') {
       switch (true) {
-        case this.hasFlag(SpeedrunSyncJobFlags.Players) &&
+        case this.hasAggregation(AggregationField.Player) &&
           queue.topPlayers.length < this.playerLimit - 1:
           if (result && result.type === 'lg') {
             queue.topPlayers.push(result.player)
@@ -118,7 +109,8 @@ export class SpeedrunSequellSyncJob implements Job {
             min: 'dur',
             playerBlacklist: [...data.bots, ...queue.topPlayers],
           })
-        case this.hasFlag(SpeedrunSyncJobFlags.Races) && queue.races.length > 0:
+        case this.hasAggregation(AggregationField.Race) &&
+          queue.races.length > 0:
           logger.debug(`processing races: ${queue.races.length} left.`)
 
           return this.next({
@@ -126,7 +118,7 @@ export class SpeedrunSequellSyncJob implements Job {
             race: queue.races.shift(),
             playerBlacklist: [...data.bots],
           })
-        case this.hasFlag(SpeedrunSyncJobFlags.Backgrounds) &&
+        case this.hasAggregation(AggregationField.Background) &&
           queue.backgrounds.length > 0:
           logger.debug(
             `processing backgrounds: ${queue.backgrounds.length} left.`
@@ -137,7 +129,7 @@ export class SpeedrunSequellSyncJob implements Job {
             background: queue.backgrounds.shift(),
             playerBlacklist: [...data.bots],
           })
-        case this.hasFlag(SpeedrunSyncJobFlags.Gods) && queue.gods.length > 0:
+        case this.hasAggregation(AggregationField.God) && queue.gods.length > 0:
           logger.debug(`processing gods: ${queue.gods.length} left.`)
 
           return this.next({
@@ -168,7 +160,7 @@ export class SpeedrunSequellSyncJob implements Job {
       try {
         logger.debug(`persisting speedrun: ${result.gid}`)
 
-        const speedrun = await Speedrun.findOneAndUpdate(
+        const speedrun = await GameInfo.findOneAndUpdate(
           { gid: result.gid },
           result,
           { upsert: true, setDefaultsOnInsert: true, new: true }
@@ -190,7 +182,7 @@ export class SpeedrunSequellSyncJob implements Job {
       const { morgue, type, ...conditions } = result
 
       try {
-        await Speedrun.updateOne(
+        await GameInfo.updateOne(
           conditions,
           { morgue },
           { upsert: true, setDefaultsOnInsert: true }
@@ -249,8 +241,8 @@ export class SpeedrunSequellSyncJob implements Job {
     this.$resolve = resolve
   }
 
-  private hasFlag(flag: SpeedrunSyncJobFlags) {
-    return (this.flags & flag) === flag
+  private hasAggregation(field: AggregationField) {
+    return this.aggregations.indexOf(field) !== -1
   }
 }
 

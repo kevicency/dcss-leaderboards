@@ -1,4 +1,4 @@
-export { SpeedrunRankingsAggregateJob } from './aggregate'
+export { GameInfoAggregationsJob } from './aggregate'
 export { Job } from './job'
-export { SpeedrunSequellSyncJob } from './sync'
-export { SpeedrunVideoUpdateJob } from './video'
+export { GameInfoSyncJob } from './sync'
+export { GameInfoVideUpdateJob } from './update'

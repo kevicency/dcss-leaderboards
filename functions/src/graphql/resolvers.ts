@@ -1,11 +1,11 @@
 import { GraphQLDateTime } from 'graphql-iso-date'
-import { ComboHighscore, Rankings, RankingType } from '../model'
+import { AggregationField, ComboHighscore, Speedruns } from '../model'
 
 export const resolvers = {
   DateTime: GraphQLDateTime,
   Query: {
-    rankings: async (_: any, { by: type }: { by: RankingType }) => {
-      var collection = Rankings[type]
+    rankings: async (_: any, { by: type }: { by: AggregationField }) => {
+      var collection = Speedruns[type]
 
       const rankings = collection ? await collection.find() : []
 

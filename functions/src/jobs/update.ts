@@ -1,40 +1,39 @@
 import { videos } from '../data'
 import { createLogger } from '../logger'
 import {
-  RankingByBackground,
-  RankingByGod,
-  RankingByPlayer,
-  RankingByRace,
-  Speedrun,
+  GameInfo,
+  SpeedrunByBackground,
+  SpeedrunByGod,
+  SpeedrunByPlayer,
 } from '../model'
 import { Job } from './job'
 
 const logger = createLogger('video')
 
-export class SpeedrunVideoUpdateJob implements Job {
+export class GameInfoVideUpdateJob implements Job {
   async start() {
     logger.debug('starting video update job...')
 
     for (const gid in videos) {
       logger.info(`updating vod of ${gid}`)
 
-      await Speedrun.updateOne({ gid }, { vod: videos[gid] }, { upsert: false })
-      await RankingByBackground.updateOne(
+      await GameInfo.updateOne({ gid }, { vod: videos[gid] }, { upsert: false })
+      await SpeedrunByBackground.updateOne(
         { gid },
         { vod: videos[gid] },
         { upsert: false }
       )
-      await RankingByGod.updateOne(
+      await SpeedrunByGod.updateOne(
         { gid },
         { vod: videos[gid] },
         { upsert: false }
       )
-      await RankingByPlayer.updateOne(
+      await SpeedrunByPlayer.updateOne(
         { gid },
         { vod: videos[gid] },
         { upsert: false }
       )
-      await RankingByRace.updateOne(
+      await SpeedrunByBackground.updateOne(
         { gid },
         { vod: videos[gid] },
         { upsert: false }
