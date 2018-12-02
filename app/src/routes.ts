@@ -11,12 +11,14 @@ const routes: RouteDefinition[] = [
     name: 'speedruns',
     path: '/speedruns',
     forwardTo: 'speedruns.player',
-    component: null,
     children: [
       {
         name: 'player',
-        path: '/',
-        component: null,
+        path: '/player',
+      },
+      {
+        name: 'player15Runes',
+        path: '/player15r',
       },
       {
         name: 'race',
@@ -51,7 +53,6 @@ const routes: RouteDefinition[] = [
   {
     name: constants.UNKNOWN_ROUTE,
     path: '/404',
-    component: 'Error 404',
   },
 ]
 

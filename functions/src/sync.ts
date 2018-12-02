@@ -7,6 +7,7 @@ import {
 import { ComboHighscoreSyncJob } from './jobs/sync'
 import { createLogger } from './logger'
 import { IrcSequell, Sequell } from './sequell'
+import { inSeries } from './utils'
 
 const settings: any = require('../local.settings.json')
 Object.assign(process.env, settings.Values)
@@ -35,10 +36,12 @@ async function sync() {
     ),
   ])
 
-  const limit = 25
+  const limit = 10
   const jobs = [
     new GameInfoSyncJob(sequell, {
+      skipMorgue: true,
       playerLimit: limit,
+      playerAllRunes: true,
     }),
     new GameInfoAggregationsJob({
       limit,
@@ -47,14 +50,14 @@ async function sync() {
     new ComboHighscoreSyncJob(),
   ]
 
-  return (
-    jobs
-      // .slice(3, 4)
-      // .slice(2, 3)
-      .reduce(
-        (promise, job) => promise.then(job.start.bind(job)),
-        Promise.resolve()
-      )
+  return inSeries(
+    jobs.slice(1, 3).map(job => () =>
+      job.start().catch(err => {
+        logger.error(err)
+
+        return Promise.resolve()
+      })
+    )
   )
 }
 

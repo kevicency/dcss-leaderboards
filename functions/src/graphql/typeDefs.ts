@@ -13,6 +13,7 @@ export const typeDefs = gql`
     morgue: String
     player: String!
     race: String!
+    runes: Int!
     points: Int!
     title: String!
     turns: Int!
@@ -22,6 +23,7 @@ export const typeDefs = gql`
 
   enum AggregationField {
     player
+    player15Runes
     race
     background
     god

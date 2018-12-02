@@ -152,6 +152,10 @@ export class SpeedrunsView extends React.Component<SpeedrunsViewProps> {
                 router.navigate(`speedruns.${item.props.itemKey}`)
               }}>
               <PivotItem itemKey="player" headerText="by Player" />
+              <PivotItem
+                itemKey="player15Runes"
+                headerText="by Player (15 runes)"
+              />
               <PivotItem itemKey="race" headerText="by Race" />
               <PivotItem itemKey="background" headerText="by Class" />
               <PivotItem itemKey="god" headerText="by God" />

@@ -48,11 +48,12 @@ export async function sync(aggregationIndex: number, force = false) {
   const jobs = [
     new GameInfoSyncJob(sequell, {
       aggregations: [aggregationField],
+      playerAllRunes: true,
       playerLimit:
         aggregationField === AggregationField.Player ? playerLimit : undefined,
     }),
     new GameInfoAggregationsJob({
-      types: [aggregationField],
+      aggregations: [aggregationField],
       limit:
         aggregationField === AggregationField.Player ? playerLimit : undefined,
     }),

@@ -3,7 +3,6 @@ import {
   AggregationField,
   GameInfo,
   GameInfoAggregations,
-  getAggregationFieldName,
   Speedruns,
 } from '../model'
 import { Job } from './job'
@@ -11,13 +10,16 @@ import { Job } from './job'
 const logger = createLogger('aggregate')
 
 export class GameInfoAggregationsJob implements Job {
-  public types: AggregationField[]
+  public aggregations: AggregationField[]
   public limit: number
 
-  constructor(args: { limit?: number; types?: AggregationField[] } = {}) {
+  constructor(
+    args: { limit?: number; aggregations?: AggregationField[] } = {}
+  ) {
     this.limit = args.limit
-    this.types = args.types || [
+    this.aggregations = args.aggregations || [
       AggregationField.Player,
+      AggregationField.Player15Runes,
       AggregationField.Race,
       AggregationField.Background,
       AggregationField.God,
@@ -27,13 +29,12 @@ export class GameInfoAggregationsJob implements Job {
   start(): Promise<any> {
     logger.debug('starting job...')
 
-    return this.types
-      .reduce((memo, type) => {
-        const field = getAggregationFieldName(type)
+    return this.aggregations
+      .reduce((memo, aggregrationType) => {
         const aggregate = async () => {
-          logger.debug(`running aggregation for ${field}`)
+          logger.debug(`running aggregation for ${aggregrationType}`)
 
-          const speedruns = Speedruns[type].collection
+          const speedruns = Speedruns[aggregrationType].collection
           logger.debug(`dropping collection ${speedruns.name}`)
 
           try {
@@ -44,14 +45,12 @@ export class GameInfoAggregationsJob implements Job {
           }
 
           const aggregations = GameInfoAggregations.aggregateSpeedrunBy(
-            field,
-            type === AggregationField.Player ? this.limit : null
+            aggregrationType,
+            aggregrationType === AggregationField.Player ? this.limit : null
           )
 
-          console.log(aggregations)
-
           await GameInfo.aggregate(aggregations).exec()
-          logger.debug(`aggregations for ${field} done.`)
+          logger.debug(`aggregations for ${aggregrationType} done.`)
 
           return
         }

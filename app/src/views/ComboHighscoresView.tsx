@@ -59,6 +59,14 @@ const columns: IColumn[] = [
     isSortedDescending: false,
   },
   {
+    key: 'turns',
+    name: 'Turns',
+    fieldName: 'turns',
+    minWidth: 70,
+    maxWidth: 70,
+    isResizable: true,
+  },
+  {
     key: 'duration',
     name: 'Time',
     fieldName: 'duration',

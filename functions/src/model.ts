@@ -1,6 +1,6 @@
-import { capitalize } from 'lodash'
 import { Document, model, Schema } from 'mongoose'
 import { lgResult } from './sequell/sequell'
+import { capitalize } from './utils'
 
 export type GameInfoValues = lgResult & {
   morgue: String
@@ -21,6 +21,7 @@ export const GameInfoSchema = new Schema({
   morgue: String,
   player: String,
   race: String,
+  runes: Number,
   points: Number,
   title: String,
   turns: Number,
@@ -31,7 +32,7 @@ export const GameInfoSchema = new Schema({
 export const GameInfo = model<GameInfoDocument>(
   'Speedrun',
   GameInfoSchema,
-  'speedruns',
+  'gameInfos',
   true
 )
 export type GameInfo = typeof GameInfoSchema
@@ -42,6 +43,13 @@ export const SpeedrunByPlayer = model<GameInfoDocument>(
   'speedrunsByPlayer',
   true
 )
+export const SpeedrunByPlayer15Runes = model<GameInfoDocument>(
+  'Speedrun',
+  GameInfoSchema,
+  'speedrunsByPlayer15Runes',
+  true
+)
+
 export const SpeedrunByBackground = model<GameInfoDocument>(
   'Speedrun',
   GameInfoSchema,
@@ -72,6 +80,7 @@ export const ComboHighscore = model<GameInfoDocument>(
 
 export enum AggregationField {
   Player = 'player',
+  Player15Runes = 'player15Runes',
   Race = 'race',
   Background = 'background',
   God = 'god',
@@ -79,6 +88,7 @@ export enum AggregationField {
 
 export const Speedruns = {
   [AggregationField.Player]: SpeedrunByPlayer,
+  [AggregationField.Player15Runes]: SpeedrunByPlayer15Runes,
   [AggregationField.Race]: SpeedrunByRace,
   [AggregationField.Background]: SpeedrunByBackground,
   [AggregationField.God]: SpeedrunByGod,
@@ -94,20 +104,34 @@ const fieldNames = [
   'morgue',
   'player',
   'race',
+  'runes',
   'points',
   'title',
   'turns',
   'xl',
   'vod',
 ]
-export const getAggregationFieldName = (aggregationField: AggregationField) =>
-  aggregationField
+export const getAggregationFieldName = (
+  aggregationField: AggregationField
+): string =>
+  aggregationField === AggregationField.Player15Runes
+    ? getAggregationFieldName(AggregationField.Player)
+    : aggregationField
 
 export const GameInfoAggregations = {
   aggregateSpeedrunBy: (aggregationField: AggregationField, limit?: number) => {
     const aggregationFieldName = getAggregationFieldName(aggregationField)
+    const outCollection = `speedrunsBy${capitalize(aggregationField)}`
+
+    const filter =
+      aggregationField === AggregationField.Player15Runes
+        ? {
+            $match: { runes: { $eq: 15 } },
+          }
+        : null
 
     return [
+      filter,
       {
         $sort: {
           duration: 1,
@@ -121,7 +145,7 @@ export const GameInfoAggregations = {
             return memo
           },
           {
-            _id: `$${aggregationFieldName}`,
+            _id: { field: `$${aggregationFieldName}`, runes: '$runes' },
           }
         ),
       },
@@ -166,8 +190,8 @@ export const GameInfoAggregations = {
           ]
         : []),
       {
-        $out: `speedrunsBy${capitalize(aggregationFieldName)}`,
+        $out: outCollection,
       },
-    ]
+    ].filter(Boolean)
   },
 }

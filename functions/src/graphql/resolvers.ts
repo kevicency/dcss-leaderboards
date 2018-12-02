@@ -1,13 +1,20 @@
 import { GraphQLDateTime } from 'graphql-iso-date'
-import { AggregationField, ComboHighscore, Speedruns } from '../model'
+import {
+  AggregationField,
+  ComboHighscore,
+  GameInfoDocument,
+  Speedruns,
+} from '../model'
 
 export const resolvers = {
   DateTime: GraphQLDateTime,
   Query: {
-    speedruns: async (_: any, { by: type }: { by: AggregationField }) => {
-      var Speedrun = Speedruns[type]
+    speedruns: async (_: any, { by }: { by: AggregationField }) => {
+      var Speedrun = Speedruns[by]
 
-      const gameInfos = Speedrun ? await Speedrun.find() : []
+      const gameInfos: GameInfoDocument[] = Speedrun
+        ? await Speedrun.find()
+        : []
 
       return gameInfos.map(x => x.toJSON())
     },

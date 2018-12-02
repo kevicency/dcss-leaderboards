@@ -13,7 +13,8 @@ export class GameInfoSyncJobQueue {
   public races: string[] = [...data.races]
   public backgrounds: string[] = [...data.backgrounds]
   public gods: string[] = [...data.godKeywords]
-  public topPlayers: string[] = []
+  public players: string[] = []
+  public players15Runes: string[] = []
 }
 export interface GameInfoSyncJobOptions {
   onError?(err: any): void
@@ -22,6 +23,8 @@ export interface GameInfoSyncJobOptions {
   delay?: number
   timeout?: number
   playerLimit?: number
+  playerAllRunes?: boolean
+  skipMorgue?: boolean
   aggregations?: AggregationField[]
 }
 
@@ -33,7 +36,9 @@ export class GameInfoSyncJob implements Job {
   private tid: NodeJS.Timeout
   private aggregations: AggregationField[]
   private killedMessages: string[] = []
-  public playerLimit: number
+  private playerLimit: number
+  private playerAllRunes: boolean
+  private skipMorgue: boolean
 
   public delay: number
   public timeout: number
@@ -46,7 +51,9 @@ export class GameInfoSyncJob implements Job {
       onFinished,
       delay,
       timeout,
+      skipMorgue,
       playerLimit,
+      playerAllRunes,
       aggregations,
     }: GameInfoSyncJobOptions = {}
   ) {
@@ -54,6 +61,8 @@ export class GameInfoSyncJob implements Job {
     this.delay = delay || 1000
     this.timeout = timeout || 95000
     this.playerLimit = playerLimit || 10
+    this.playerAllRunes = playerAllRunes || false
+    this.skipMorgue = skipMorgue || false
     this.aggregations =
       aggregations || (values(AggregationField) as AggregationField[])
     this.queue = new GameInfoSyncJobQueue()
@@ -94,20 +103,36 @@ export class GameInfoSyncJob implements Job {
     if (result.type !== 'log') {
       switch (true) {
         case this.hasAggregation(AggregationField.Player) &&
-          queue.topPlayers.length < this.playerLimit - 1:
+          queue.players.length < this.playerLimit - 1:
           if (result && result.type === 'lg') {
-            queue.topPlayers.push(result.player)
+            queue.players.push(result.player)
           }
 
           logger.debug(
-            `processing top players: ${queue.topPlayers.length}/${
+            `processing players: ${queue.players.length}/${this.playerLimit}.`
+          )
+
+          return this.next({
+            min: 'dur',
+            playerBlacklist: [...data.bots, ...queue.players],
+          })
+        case this.hasAggregation(AggregationField.Player) &&
+          this.playerAllRunes &&
+          queue.players15Runes.length < this.playerLimit - 1:
+          if (result && result.type === 'lg') {
+            queue.players15Runes.push(result.player)
+          }
+
+          logger.debug(
+            `processing players (15 runes): ${queue.players15Runes.length}/${
               this.playerLimit
             }.`
           )
 
           return this.next({
             min: 'dur',
-            playerBlacklist: [...data.bots, ...queue.topPlayers],
+            runes: 15,
+            playerBlacklist: [...data.bots, ...queue.players15Runes],
           })
         case this.hasAggregation(AggregationField.Race) &&
           queue.races.length > 0:
@@ -166,7 +191,7 @@ export class GameInfoSyncJob implements Job {
           { upsert: true, setDefaultsOnInsert: true, new: true }
         )
 
-        if (!gameInfo.get('morgue')) {
+        if (!this.skipMorgue && !gameInfo.get('morgue')) {
           this.sequell.log({ gid: result.gid })
         }
       } catch (err) {
