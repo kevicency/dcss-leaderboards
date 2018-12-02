@@ -158,22 +158,22 @@ export class GameInfoSyncJob implements Job {
   ) => {
     if (result.type === 'lg') {
       try {
-        logger.debug(`persisting speedrun: ${result.gid}`)
+        logger.debug(`persisting game info: ${result.gid}`)
 
-        const speedrun = await GameInfo.findOneAndUpdate(
+        const gameInfo = await GameInfo.findOneAndUpdate(
           { gid: result.gid },
           result,
           { upsert: true, setDefaultsOnInsert: true, new: true }
         )
 
-        if (!speedrun.get('morgue')) {
+        if (!gameInfo.get('morgue')) {
           this.sequell.log({ gid: result.gid })
         }
       } catch (err) {
         this.emitError(err)
       }
 
-      logger.debug(`done persisting speedrun: ${result.gid}`)
+      logger.debug(`done persisting game info: ${result.gid}`)
     }
 
     if (result.type === 'log') {
@@ -255,16 +255,16 @@ export class ComboHighscoreSyncJob implements Job {
 
   public async start() {
     logger.debug('starting combo highscore job...')
-    const speedruns = await this.scraper.fetchComboHighscores()
+    const gameInfos = await this.scraper.fetchComboHighscores()
 
-    logger.debug(`fetched ${speedruns.length} speedruns. Persisting...`)
+    logger.debug(`fetched ${gameInfos.length} game infos. Persisting...`)
 
-    for (const speedrun of speedruns) {
+    for (const gameInfo of gameInfos) {
       await ComboHighscore.updateOne(
         {
-          gid: speedrun.gid,
+          gid: gameInfo.gid,
         },
-        speedrun,
+        gameInfo,
         { upsert: true, setDefaultsOnInsert: true }
       )
     }

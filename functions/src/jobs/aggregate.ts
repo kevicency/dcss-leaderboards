@@ -10,7 +10,7 @@ import { Job } from './job'
 
 const logger = createLogger('aggregate')
 
-export class SpeedrunRankingsAggregateJob implements Job {
+export class GameInfoAggregationsJob implements Job {
   public types: AggregationField[]
   public limit: number
 
@@ -33,13 +33,13 @@ export class SpeedrunRankingsAggregateJob implements Job {
         const aggregate = async () => {
           logger.debug(`running aggregation for ${field}`)
 
-          const collection = Speedruns[type].collection
-          logger.debug(`dropping collection ${collection.name}`)
+          const speedruns = Speedruns[type].collection
+          logger.debug(`dropping collection ${speedruns.name}`)
 
           try {
-            await collection.drop()
+            await speedruns.drop()
           } catch (err) {
-            logger.debug(`collection ${collection.name} did not exist`)
+            logger.debug(`collection ${speedruns.name} did not exist`)
             /* ignore */
           }
 

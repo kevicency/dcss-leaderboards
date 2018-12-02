@@ -55,9 +55,9 @@ export const Header = withRoute(({ router, route }: HeaderProps) => (
           onLinkClick={item => {
             router.navigate(item.props.itemKey)
           }}>
-          <PivotItem itemKey="rankings" headerText="Real-Time" />
+          <PivotItem itemKey="speedruns" headerText="Real-Time" />
           {/* <PivotItem itemKey="turncount" headerText="Turncount" /> */}
-          <PivotItem itemKey="highscore" headerText="Highscore" />
+          <PivotItem itemKey="highscores" headerText="Highscores" />
         </Pivot>
       </Flex>
     </ContentContainer>

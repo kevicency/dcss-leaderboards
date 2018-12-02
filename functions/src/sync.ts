@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose'
 import {
-  SpeedrunRankingsAggregateJob,
-  SpeedrunSequellSyncJob,
-  SpeedrunVideoUpdateJob,
+  GameInfoAggregationsJob,
+  GameInfoSyncJob,
+  GameInfoVideUpdateJob,
 } from './jobs'
 import { ComboHighscoreSyncJob } from './jobs/sync'
 import { createLogger } from './logger'
@@ -13,7 +13,7 @@ Object.assign(process.env, settings.Values)
 
 const logger = createLogger('sync')
 
-async function sync(force: boolean = false) {
+async function sync() {
   const [sequell] = await Promise.all([
     new Promise<Sequell>(resolve => {
       const sequell = new IrcSequell()
@@ -37,21 +37,19 @@ async function sync(force: boolean = false) {
 
   const limit = 25
   const jobs = [
-    new SpeedrunSequellSyncJob(sequell, {
-      // flags: SpeedrunSyncJobFlags.Players,
+    new GameInfoSyncJob(sequell, {
       playerLimit: limit,
     }),
-    new SpeedrunRankingsAggregateJob({
-      // types: [RankingType.Player],
+    new GameInfoAggregationsJob({
       limit,
     }),
-    new SpeedrunVideoUpdateJob(),
+    new GameInfoVideUpdateJob(),
     new ComboHighscoreSyncJob(),
   ]
 
   return (
     jobs
-      .slice(3, 4)
+      // .slice(3, 4)
       // .slice(2, 3)
       .reduce(
         (promise, job) => promise.then(job.start.bind(job)),

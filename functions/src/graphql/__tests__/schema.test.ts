@@ -6,14 +6,14 @@ const testCaseA = {
   id: 'Test Case A',
   query: `
     query {
-      rankings(by: player) {
+      speedruns(by: player) {
          gid
       }
     }
   `,
   variables: {},
   context: {},
-  expected: { data: { rankings: [] as any[] } },
+  expected: { data: { speedruns: [] as any[] } },
 }
 
 describe('Schema', () => {
@@ -24,7 +24,7 @@ describe('Schema', () => {
     expect(async () => {
       const MockServer = mockServer(schema, {
         Query: () => ({
-          rankings: () => [] as any[],
+          speedruns: () => [] as any[],
         }),
         Boolean: () => false,
         ID: () => '1',

@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 export const typeDefs = gql`
   scalar DateTime
 
-  type Speedrun {
+  type GameInfo {
     account: String!
     background: String!
     date: DateTime!
@@ -20,7 +20,7 @@ export const typeDefs = gql`
     vod: String
   }
 
-  enum RankingType {
+  enum AggregationField {
     player
     race
     background
@@ -28,8 +28,8 @@ export const typeDefs = gql`
   }
 
   type Query {
-    rankings(by: RankingType!): [Speedrun]
-    comboHighscores: [Speedrun]
+    speedruns(by: AggregationField!): [GameInfo]
+    comboHighscores: [GameInfo]
   }
 `
 export default typeDefs

@@ -4,17 +4,17 @@ import { AggregationField, ComboHighscore, Speedruns } from '../model'
 export const resolvers = {
   DateTime: GraphQLDateTime,
   Query: {
-    rankings: async (_: any, { by: type }: { by: AggregationField }) => {
-      var collection = Speedruns[type]
+    speedruns: async (_: any, { by: type }: { by: AggregationField }) => {
+      var Speedrun = Speedruns[type]
 
-      const rankings = collection ? await collection.find() : []
+      const gameInfos = Speedrun ? await Speedrun.find() : []
 
-      return rankings.map(x => x.toJSON())
+      return gameInfos.map(x => x.toJSON())
     },
     comboHighscores: async () => {
-      const values = await ComboHighscore.find().sort('gid')
+      const gameInfos = await ComboHighscore.find().sort('gid')
 
-      return values.map(x => x.toJSON())
+      return gameInfos.map(x => x.toJSON())
     },
   },
 }

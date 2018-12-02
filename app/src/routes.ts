@@ -5,12 +5,12 @@ const routes: RouteDefinition[] = [
   {
     name: 'home',
     path: '/',
-    forwardTo: 'rankings.player',
+    forwardTo: 'speedruns.player',
   },
   {
-    name: 'rankings',
-    path: '/rankings',
-    forwardTo: 'rankings.player',
+    name: 'speedruns',
+    path: '/speedruns',
+    forwardTo: 'speedruns.player',
     component: null,
     children: [
       {
@@ -33,9 +33,9 @@ const routes: RouteDefinition[] = [
     ],
   },
   {
-    name: 'highscore',
-    path: '/highscore',
-    forwardTo: 'highscore.combo',
+    name: 'highscores',
+    path: '/highscores',
+    forwardTo: 'highscores.combo',
     children: [
       {
         name: 'combo',
@@ -46,7 +46,7 @@ const routes: RouteDefinition[] = [
   {
     name: 'index-html',
     path: '/index.html',
-    forwardTo: 'rankings.player',
+    forwardTo: 'speedruns.player',
   },
   {
     name: constants.UNKNOWN_ROUTE,
