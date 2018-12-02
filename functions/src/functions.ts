@@ -90,7 +90,11 @@ export async function sync(iteration: number, force = false) {
 }
 
 export function graphQL() {
-  const server = new ApolloServer({ schema })
+  const server = new ApolloServer({
+    schema,
+    introspection: true,
+    playground: true,
+  })
   const handler = server.createHandler()
   const mongoPromise = ensureMongoose()
 

@@ -1,13 +1,15 @@
 import { Icon } from 'office-ui-fabric-react'
 import * as React from 'react'
+import { uri as graphqlUri } from '../apollo'
 import { GithubLogo } from '../assets/github'
+import { GraphQLLogo } from '../assets/graphql'
 import stonesoup from '../assets/stonesoup.png'
 import styled, { Box, Flex } from '../styled'
 import t from '../theme'
 import { ContentContainer } from './Layout'
 
 const Container = styled(Box)`
-  background: ${({ theme }) => theme.palette.neutralSecondary};
+  background: ${({ theme }) => theme.palette.neutralTertiary};
   color: ${({ theme }) => theme.palette.white};
 
   i {
@@ -41,6 +43,11 @@ export const Footer = () => (
         <Box mx={1}>
           <Link href="https://github.com/kmees/speedcrawl" target="_blank">
             <GithubLogo height="22px" width="22px" />
+          </Link>
+        </Box>
+        <Box mx={1}>
+          <Link href={graphqlUri} target="_blank">
+            <GraphQLLogo height="22px" width="22px" />
           </Link>
         </Box>
         <Box mx={1}>
