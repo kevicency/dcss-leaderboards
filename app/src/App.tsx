@@ -1,7 +1,7 @@
 import { Fabric } from 'office-ui-fabric-react'
 import * as React from 'react'
 import { InjectedRouterNode, RouteNode } from 'react-router5'
-import { ContentContainer, Footer, Header } from './components'
+import { Footer, Header } from './components'
 import styled, { Flex } from './styled'
 import { ComboHighscoresView, Error404View, RankingsView } from './views'
 
@@ -18,19 +18,15 @@ class App extends React.Component {
       <Fabric>
         <Body flexDirection="column">
           <Header />
-          <ContentContainer flex="1">
-            <RouteNode nodeName="">
-              {({ route }: InjectedRouterNode) => (
-                <React.Fragment>
-                  {/rankings\/?.*/.test(route.name) && <RankingsView />}
-                  {/comboHighscores/.test(route.name) && (
-                    <ComboHighscoresView />
-                  )}
-                  {/UNKNOWN_ROUTE\/?.*/.test(route.name) && <Error404View />}
-                </React.Fragment>
-              )}
-            </RouteNode>
-          </ContentContainer>
+          <RouteNode nodeName="">
+            {({ route }: InjectedRouterNode) => (
+              <React.Fragment>
+                {/rankings\/?.*/.test(route.name) && <RankingsView />}
+                {/highscore\/?.*/.test(route.name) && <ComboHighscoresView />}
+                {/UNKNOWN_ROUTE\/?.*/.test(route.name) && <Error404View />}
+              </React.Fragment>
+            )}
+          </RouteNode>
           <Footer />
         </Body>
       </Fabric>

@@ -3,14 +3,27 @@ import {
   DetailsListLayoutMode,
   IColumn,
   Link,
+  Pivot,
+  PivotItem,
+  PivotLinkFormat,
   SelectionMode,
 } from 'office-ui-fabric-react'
 import * as React from 'react'
 import { Query, QueryResult } from 'react-apollo'
 import { InjectedRouterNode, routeNode } from 'react-router5'
-import { ErrorMessage, FancyList, FlexSpinner } from '../components'
+import {
+  ContentContainer,
+  ErrorMessage,
+  FancyList,
+  FlexSpinner,
+} from '../components'
 import { BronzeTrophy, GoldTrophy, SilverTrophy } from '../components/Trophy'
-import { Box } from '../styled'
+import styled, { Box, Flex } from '../styled'
+import theme from '../theme'
+
+const PivotContainer = styled.div`
+  background: ${({ theme }) => theme.palette.neutralLighterAlt};
+`
 
 const GET_RANKINGS = gql`
   query RankingsQuery($by: RankingType!) {
@@ -124,42 +137,63 @@ export type RankingsViewProps = Partial<InjectedRouterNode> & {}
 @(routeNode as any)('rankings') // todo compiler pls
 export class RankingsView extends React.Component<RankingsViewProps> {
   public render() {
-    const { route } = this.props
+    const { route, router } = this.props
     const by = route.name.split('.')[1]
     const variables = { by } as OperationVariables
 
     return (
-      <Query query={GET_RANKINGS} variables={variables}>
-        {({ loading, error, data }: QueryResult) => {
-          if (loading) {
-            return <FlexSpinner flex="1" />
-          }
-          if (error) {
-            return (
-              <Box flex="1" alignSelf="center">
-                <ErrorMessage
-                  message="Oops, something went wrong!"
-                  error={error}
-                />
-              </Box>
-            )
-          }
+      <Flex flexDirection="column" flex="1">
+        <PivotContainer>
+          <ContentContainer flex="1">
+            <Pivot
+              headersOnly={true}
+              linkFormat={PivotLinkFormat.tabs}
+              selectedKey={route ? route.name.replace(/rankings\./, '') : null}
+              styles={{ root: { background: theme.palette.neutralLighter } }}
+              onLinkClick={item => {
+                router.navigate(`rankings.${item.props.itemKey}`)
+              }}>
+              <PivotItem itemKey="player" headerText="by Player" />
+              <PivotItem itemKey="race" headerText="by Race" />
+              <PivotItem itemKey="background" headerText="by Class" />
+              <PivotItem itemKey="god" headerText="by God" />
+            </Pivot>
+          </ContentContainer>
+        </PivotContainer>
+        <ContentContainer flex="1">
+          <Query query={GET_RANKINGS} variables={variables}>
+            {({ loading, error, data }: QueryResult) => {
+              if (loading) {
+                return <FlexSpinner flex="1" />
+              }
+              if (error) {
+                return (
+                  <Box flex="1" alignSelf="center">
+                    <ErrorMessage
+                      message="Oops, something went wrong!"
+                      error={error}
+                    />
+                  </Box>
+                )
+              }
 
-          return (
-            <Box flex="1">
-              <FancyList
-                selectionMode={SelectionMode.none}
-                layoutMode={DetailsListLayoutMode.justified}
-                items={data.rankings.map((x: any, i: number) => ({
-                  ...x,
-                  position: i + 1,
-                }))}
-                columns={this.getColumns(by)}
-              />
-            </Box>
-          )
-        }}
-      </Query>
+              return (
+                <Box flex="1">
+                  <FancyList
+                    selectionMode={SelectionMode.none}
+                    layoutMode={DetailsListLayoutMode.justified}
+                    items={data.rankings.map((x: any, i: number) => ({
+                      ...x,
+                      position: i + 1,
+                    }))}
+                    columns={this.getColumns(by)}
+                  />
+                </Box>
+              )
+            }}
+          </Query>
+        </ContentContainer>
+      </Flex>
     )
   }
 

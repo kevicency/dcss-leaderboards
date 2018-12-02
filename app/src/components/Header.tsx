@@ -51,14 +51,13 @@ export const Header = withRoute(({ router, route }: HeaderProps) => (
       <Flex alignItems="center" pt={1} flex="4" justifyContent="flex-end">
         <Pivot
           headersOnly={true}
-          selectedKey={route ? route.name.replace(/rankings\./, '') : null}
+          selectedKey={route ? route.name.replace(/\..*/, '') : null}
           onLinkClick={item => {
-            router.navigate(`rankings.${item.props.itemKey}`)
+            router.navigate(item.props.itemKey)
           }}>
-          <PivotItem itemKey="player" headerText="by Player" />
-          <PivotItem itemKey="race" headerText="by Race" />
-          <PivotItem itemKey="background" headerText="by Class" />
-          <PivotItem itemKey="god" headerText="by God" />
+          <PivotItem itemKey="rankings" headerText="Real-Time" />
+          {/* <PivotItem itemKey="turncount" headerText="Turncount" /> */}
+          <PivotItem itemKey="highscore" headerText="Highscore" />
         </Pivot>
       </Flex>
     </ContentContainer>

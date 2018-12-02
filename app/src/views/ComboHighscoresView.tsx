@@ -7,7 +7,12 @@ import {
 } from 'office-ui-fabric-react'
 import * as React from 'react'
 import { Query, QueryResult } from 'react-apollo'
-import { ErrorMessage, FancyList, FlexSpinner } from '../components'
+import {
+  ContentContainer,
+  ErrorMessage,
+  FancyList,
+  FlexSpinner,
+} from '../components'
 import { Box } from '../styled'
 
 const GET_COMBO_HIGHSCORES = gql`
@@ -107,37 +112,39 @@ export class ComboHighscoresView extends React.Component<
 > {
   public render() {
     return (
-      <Query query={GET_COMBO_HIGHSCORES}>
-        {({ loading, error, data }: QueryResult) => {
-          if (loading) {
-            return <FlexSpinner flex="1" />
-          }
-          if (error) {
+      <ContentContainer flex="1">
+        <Query query={GET_COMBO_HIGHSCORES}>
+          {({ loading, error, data }: QueryResult) => {
+            if (loading) {
+              return <FlexSpinner flex="1" />
+            }
+            if (error) {
+              return (
+                <Box flex="1" alignSelf="center">
+                  <ErrorMessage
+                    message="Oops, something went wrong!"
+                    error={error}
+                  />
+                </Box>
+              )
+            }
+
             return (
-              <Box flex="1" alignSelf="center">
-                <ErrorMessage
-                  message="Oops, something went wrong!"
-                  error={error}
+              <Box flex="1">
+                <FancyList
+                  selectionMode={SelectionMode.none}
+                  layoutMode={DetailsListLayoutMode.justified}
+                  items={data.comboHighscores.map((x: any, i: number) => ({
+                    ...x,
+                    position: i + 1,
+                  }))}
+                  columns={columns}
                 />
               </Box>
             )
-          }
-
-          return (
-            <Box flex="1">
-              <FancyList
-                selectionMode={SelectionMode.none}
-                layoutMode={DetailsListLayoutMode.justified}
-                items={data.comboHighscores.map((x: any, i: number) => ({
-                  ...x,
-                  position: i + 1,
-                }))}
-                columns={columns}
-              />
-            </Box>
-          )
-        }}
-      </Query>
+          }}
+        </Query>
+      </ContentContainer>
     )
   }
 }

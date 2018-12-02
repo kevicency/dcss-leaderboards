@@ -33,8 +33,15 @@ const routes: RouteDefinition[] = [
     ],
   },
   {
-    name: 'comboHighscores',
-    path: '/comboHighscores',
+    name: 'highscore',
+    path: '/highscore',
+    forwardTo: 'highscore.combo',
+    children: [
+      {
+        name: 'combo',
+        path: '/combo',
+      },
+    ],
   },
   {
     name: 'index-html',
