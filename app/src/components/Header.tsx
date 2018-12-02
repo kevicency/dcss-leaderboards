@@ -3,7 +3,7 @@
 import { Pivot, PivotItem } from 'office-ui-fabric-react'
 import * as React from 'react'
 import { InjectedRouterNode, withRoute } from 'react-router5'
-import logo from '../assets/speedcrawl.png'
+import logo from '../assets/logo.png'
 import { ContentContainer } from '../components'
 import styled, { cssify, Flex } from '../styled'
 
@@ -43,8 +43,8 @@ export const Header = withRoute(({ router, route }: HeaderProps) => (
     <ContentContainer px={2} justifyContent="space-between" flexWrap="wrap">
       <TitleContainer pt={2} mr={2}>
         <Title>
-          <img src={logo} alt="Speedcrawl" height="24" />
-          <span>Speedcrawl</span>
+          <img src={logo} alt="DCSS Leaderboards Logo" height="24" />
+          <span>DCSS Leaderboards</span>
         </Title>
       </TitleContainer>
 

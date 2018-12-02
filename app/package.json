@@ -1,5 +1,5 @@
 {
-  "name": "speedcrawl",
+  "name": "@kmees/dcss-leaderboards-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
