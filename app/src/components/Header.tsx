@@ -9,6 +9,7 @@ import styled, { cssify, Flex } from '../styled'
 
 const Container = styled.div`
   background: ${({ theme }) => theme.palette.neutralLight};
+  overflow: hidden;
   /* color: ${({ theme }) => theme.palette.white}; */
 `
 const TitleContainer = styled(Flex)`
@@ -20,9 +21,19 @@ const Title = styled.h1`
   ${({ theme }) => cssify(theme.fonts.xLarge)}
   overflow: hidden;
 
+  span {
+    display: none;
+  }
+
   img {
     vertical-align: text-bottom;
-    margin-right: 6px;
+    margin-right: 5px;
+  }
+
+  @media screen and (min-width: 480px) {
+    span {
+      display: inline;
+    }
   }
 `
 
@@ -30,14 +41,14 @@ export type HeaderProps = Partial<InjectedRouterNode> & {}
 export const Header = withRoute(({ router, route }: HeaderProps) => (
   <Container>
     <ContentContainer px={2} justifyContent="space-between" flexWrap="wrap">
-      <TitleContainer flex="1" pt={2} mr={4}>
+      <TitleContainer pt={2} mr={2}>
         <Title>
           <img src={logo} alt="Speedcrawl" height="24" />
-          Speedcrawl
+          <span>Speedcrawl</span>
         </Title>
       </TitleContainer>
 
-      <Flex alignItems="center" pt={1} flex="3" justifyContent="flex-end">
+      <Flex alignItems="center" pt={1} flex="4" justifyContent="flex-end">
         <Pivot
           headersOnly={true}
           selectedKey={route ? route.name.replace(/rankings\./, '') : null}
