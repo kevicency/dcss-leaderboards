@@ -1,9 +1,5 @@
 import * as mongoose from 'mongoose'
-import {
-  GameInfoAggregationsJob,
-  GameInfoSyncJob,
-  GameInfoVideUpdateJob,
-} from './jobs'
+import { GameInfoSyncJob, GameInfoVideUpdateJob } from './jobs'
 import { ComboHighscoreSyncJob } from './jobs/sync'
 import { createLogger } from './logger'
 import { IrcSequell, Sequell } from './sequell'
@@ -43,9 +39,7 @@ async function sync() {
       playerLimit: limit,
       playerAllRunes: true,
     }),
-    new GameInfoAggregationsJob({
-      limit,
-    }),
+
     new GameInfoVideUpdateJob(),
     new ComboHighscoreSyncJob(),
   ]

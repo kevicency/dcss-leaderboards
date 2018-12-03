@@ -1,6 +1,5 @@
 import { Document, model, Schema } from 'mongoose'
 import { lgResult } from './sequell/sequell'
-import { capitalize } from './utils'
 
 export type GameInfoValues = lgResult & {
   morgue: String
@@ -12,16 +11,25 @@ export const GameInfoSchema = new Schema({
   account: String,
   background: String,
   date: Date,
-  duration: String,
+  duration: {
+    type: String,
+    index: true,
+  },
   gid: {
     type: String,
     index: true,
   },
-  god: String,
+  god: {
+    type: String,
+    required: false,
+  },
   morgue: String,
   player: String,
   race: String,
-  runes: Number,
+  runes: {
+    type: Number,
+    index: true,
+  },
   points: Number,
   title: String,
   turns: Number,
@@ -37,40 +45,6 @@ export const GameInfo = model<GameInfoDocument>(
 )
 export type GameInfo = typeof GameInfoSchema
 
-export const SpeedrunByPlayer = model<GameInfoDocument>(
-  'Speedrun',
-  GameInfoSchema,
-  'speedrunsByPlayer',
-  true
-)
-export const SpeedrunByPlayer15Runes = model<GameInfoDocument>(
-  'Speedrun',
-  GameInfoSchema,
-  'speedrunsByPlayer15Runes',
-  true
-)
-
-export const SpeedrunByBackground = model<GameInfoDocument>(
-  'Speedrun',
-  GameInfoSchema,
-  'speedrunsByBackground',
-  true
-)
-
-export const SpeedrunByRace = model<GameInfoDocument>(
-  'Speedrun',
-  GameInfoSchema,
-  'speedrunsByRace',
-  true
-)
-
-export const SpeedrunByGod = model<GameInfoDocument>(
-  'Speedrun',
-  GameInfoSchema,
-  'speedrunsByGod',
-  true
-)
-
 export const ComboHighscore = model<GameInfoDocument>(
   'Speedrun',
   GameInfoSchema,
@@ -84,14 +58,6 @@ export enum AggregationField {
   Race = 'race',
   Background = 'background',
   God = 'god',
-}
-
-export const Speedruns = {
-  [AggregationField.Player]: SpeedrunByPlayer,
-  [AggregationField.Player15Runes]: SpeedrunByPlayer15Runes,
-  [AggregationField.Race]: SpeedrunByRace,
-  [AggregationField.Background]: SpeedrunByBackground,
-  [AggregationField.God]: SpeedrunByGod,
 }
 
 const fieldNames = [
@@ -121,7 +87,6 @@ export const getAggregationFieldName = (
 export const GameInfoAggregations = {
   aggregateSpeedrunBy: (aggregationField: AggregationField, limit?: number) => {
     const aggregationFieldName = getAggregationFieldName(aggregationField)
-    const outCollection = `speedrunsBy${capitalize(aggregationField)}`
 
     const filter =
       aggregationField === AggregationField.Player15Runes
@@ -149,34 +114,6 @@ export const GameInfoAggregations = {
           }
         ),
       },
-      // Cosmos DB doesn't support $replaceRoot
-      // {
-      //   $replaceRoot: {
-      //     newRoot: '$doc',
-      //   },
-      // },
-      // {
-      //   $project: [
-      //     'account',
-      //     'background',
-      //     'date',
-      //     'duration',
-      //     'gid',
-      //     'god',
-      //     'morgue',
-      //     'player',
-      //     'race',
-      //     'points',
-      //     'title',
-      //     'turns',
-      //     'xl',
-      //     'vod',
-      //   ].reduce((memo, x) => {
-      //     memo[x] = `$doc.${x}`
-
-      //     return memo
-      //   }, {}),
-      // },
       {
         $sort: {
           duration: 1,
@@ -189,9 +126,6 @@ export const GameInfoAggregations = {
             },
           ]
         : []),
-      {
-        $out: outCollection,
-      },
     ].filter(Boolean)
   },
 }

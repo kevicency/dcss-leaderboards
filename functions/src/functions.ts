@@ -2,7 +2,7 @@ import { ApolloServer } from 'apollo-server-azure-functions'
 import { values } from 'lodash'
 import * as mongoose from 'mongoose'
 import { schema } from './graphql'
-import { GameInfoAggregationsJob, GameInfoSyncJob } from './jobs'
+import { GameInfoSyncJob } from './jobs'
 import { createLogger } from './logger'
 import { AggregationField } from './model'
 import { IrcSequell, Sequell } from './sequell'
@@ -50,11 +50,6 @@ export async function sync(aggregationIndex: number, force = false) {
       aggregations: [aggregationField],
       playerAllRunes: true,
       playerLimit:
-        aggregationField === AggregationField.Player ? playerLimit : undefined,
-    }),
-    new GameInfoAggregationsJob({
-      aggregations: [aggregationField],
-      limit:
         aggregationField === AggregationField.Player ? playerLimit : undefined,
     }),
   ]
