@@ -41,7 +41,9 @@ export const Footer = () => (
       </Box>
       <Flex alignItems="center">
         <Box mx={1}>
-          <Link href="https://github.com/kmees/speedcrawl" target="_blank">
+          <Link
+            href="https://github.com/kmees/dcss-leaderboards"
+            target="_blank">
             <GithubLogo height="22px" width="22px" />
           </Link>
         </Box>

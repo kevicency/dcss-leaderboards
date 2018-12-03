@@ -10,7 +10,7 @@
     "build": "tsc",
     "funcpack": "funcpack pack -c .",
     "prefuncpack": "yarn build",
-    "deploy": "cd .funcpack && func azure functionapp publish speedcrawl",
+    "deploy": "cd .funcpack && func azure functionapp publish dcss-leaderboards",
     "predeploy": "yarn funcpack",
     "sync": "ts-node src/sync.ts",
     "test": "jest"
