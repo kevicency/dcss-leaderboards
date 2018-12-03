@@ -54,7 +54,6 @@ async function sync() {
         urune: 15,
       },
     }),
-
     new GameInfoSyncJob(sequell, {
       skipMorgue,
       aggregations: [AggregationType.Player],

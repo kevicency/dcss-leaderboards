@@ -57,7 +57,7 @@ export class ComboHighscoreParser {
       account: values[3],
       background: cls,
       date: new Date(values[12].replace(' ', 'T') + 'Z'),
-      duration: values[10],
+      duration: values[10].replace(/^(\d):/, '0$1:'),
       gid: values[2],
       god: values[4],
       morgue: morgue,
