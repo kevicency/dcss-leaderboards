@@ -4,7 +4,7 @@ import * as mongoose from 'mongoose'
 import { schema } from './graphql'
 import { GameInfoSyncJob } from './jobs'
 import { createLogger } from './logger'
-import { AggregationField } from './model'
+import { AggregationType } from './model'
 import { IrcSequell, Sequell } from './sequell'
 import { inSeries } from './utils'
 
@@ -41,16 +41,16 @@ export async function sync(aggregationIndex: number, force = false) {
   const [sequell] = await Promise.all([ensureSequell(), ensureMongoose()])
 
   const playerLimit = 25
-  const aggregationFields = values(AggregationField) as AggregationField[]
-  const aggregationField =
-    aggregationFields[aggregationIndex % aggregationFields.length]
+  const aggregationTypes = values(AggregationType) as AggregationType[]
+  const aggregationType =
+    aggregationTypes[aggregationIndex % aggregationTypes.length]
 
   const jobs = [
     new GameInfoSyncJob(sequell, {
-      aggregations: [aggregationField],
+      aggregations: [aggregationType],
       playerAllRunes: true,
       playerLimit:
-        aggregationField === AggregationField.Player ? playerLimit : undefined,
+        aggregationType === AggregationType.Player ? playerLimit : undefined,
     }),
   ]
 

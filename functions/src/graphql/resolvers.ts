@@ -1,16 +1,10 @@
-import { GraphQLDateTime } from 'graphql-iso-date'
-import {
-  AggregationField,
-  ComboHighscore,
-  GameInfo,
-  GameInfoAggregations,
-  GameInfoValues,
-} from '../model'
+import { GraphQLDateTime } from 'graphql-iso-date';
+import { AggregationType, ComboHighscore, GameInfo, GameInfoAggregations, GameInfoValues } from '../model';
 
 export const resolvers = {
   DateTime: GraphQLDateTime,
   Query: {
-    // speedruns2: async (_: any, { by }: { by: AggregationField }) => {
+    // speedruns2: async (_: any, { by }: { by: AggregationType }) => {
     //   var Speedrun = Speedruns[by]
 
     //   const gameInfos: GameInfoDocument[] = Speedrun
@@ -19,9 +13,9 @@ export const resolvers = {
 
     //   return gameInfos.map(x => x.toJSON())
     // },
-    speedruns: async (_: any, { by }: { by: AggregationField }) => {
+    speedruns: async (_: any, { by }: { by: AggregationType }) => {
       const limit =
-        by === AggregationField.Player15Runes || by === AggregationField.Player
+        by === AggregationType.Player15Runes || by === AggregationType.Player
           ? 25
           : undefined
       const aggregations = GameInfoAggregations.aggregateSpeedrunBy(by, limit)

@@ -52,7 +52,7 @@ export const ComboHighscore = model<GameInfoDocument>(
   true
 )
 
-export enum AggregationField {
+export enum AggregationType {
   Player = 'player',
   Player15Runes = 'player15Runes',
   Race = 'race',
@@ -78,18 +78,18 @@ const fieldNames = [
   'vod',
 ]
 export const getAggregationFieldName = (
-  aggregationField: AggregationField
+  aggregationType: AggregationType
 ): string =>
-  aggregationField === AggregationField.Player15Runes
-    ? getAggregationFieldName(AggregationField.Player)
-    : aggregationField
+  aggregationType === AggregationType.Player15Runes
+    ? getAggregationFieldName(AggregationType.Player)
+    : aggregationType
 
 export const GameInfoAggregations = {
-  aggregateSpeedrunBy: (aggregationField: AggregationField, limit?: number) => {
+  aggregateSpeedrunBy: (aggregationField: AggregationType, limit?: number) => {
     const aggregationFieldName = getAggregationFieldName(aggregationField)
 
     const filter =
-      aggregationField === AggregationField.Player15Runes
+      aggregationField === AggregationType.Player15Runes
         ? {
             $match: { runes: { $eq: 15 } },
           }

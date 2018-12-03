@@ -2,7 +2,7 @@ import { EventEmitter } from 'events'
 import { noop, Omit, values } from 'lodash'
 import * as data from '../data'
 import { createLogger } from '../logger'
-import { AggregationField, ComboHighscore, GameInfo } from '../model'
+import { AggregationType, ComboHighscore, GameInfo } from '../model'
 import { Scraper, WebScraper } from '../scraper'
 import { lgQuery, Sequell, SequellResult } from '../sequell'
 import { Job } from './job'
@@ -25,7 +25,7 @@ export interface GameInfoSyncJobOptions {
   playerLimit?: number
   playerAllRunes?: boolean
   skipMorgue?: boolean
-  aggregations?: AggregationField[]
+  aggregations?: AggregationType[]
 }
 
 export class GameInfoSyncJob implements Job {
@@ -34,7 +34,7 @@ export class GameInfoSyncJob implements Job {
   private queue: GameInfoSyncJobQueue
   private emitter: EventEmitter
   private tid: NodeJS.Timeout
-  private aggregations: AggregationField[]
+  private aggregations: AggregationType[]
   private killedMessages: string[] = []
   private playerLimit: number
   private playerAllRunes: boolean
@@ -64,7 +64,7 @@ export class GameInfoSyncJob implements Job {
     this.playerAllRunes = playerAllRunes || false
     this.skipMorgue = skipMorgue || false
     this.aggregations =
-      aggregations || (values(AggregationField) as AggregationField[])
+      aggregations || (values(AggregationType) as AggregationType[])
     this.queue = new GameInfoSyncJobQueue()
     this.emitter = new EventEmitter()
     this.emitter.on('timeout', onTimeout || noop)
@@ -102,7 +102,7 @@ export class GameInfoSyncJob implements Job {
 
     if (result.type !== 'log') {
       switch (true) {
-        case this.hasAggregation(AggregationField.Player) &&
+        case this.hasAggregation(AggregationType.Player) &&
           queue.players.length < this.playerLimit - 1:
           if (result && result.type === 'lg') {
             queue.players.push(result.player)
@@ -116,7 +116,7 @@ export class GameInfoSyncJob implements Job {
             min: 'dur',
             playerBlacklist: [...data.bots, ...queue.players],
           })
-        case this.hasAggregation(AggregationField.Player) &&
+        case this.hasAggregation(AggregationType.Player) &&
           this.playerAllRunes &&
           queue.players15Runes.length < this.playerLimit - 1:
           if (result && result.type === 'lg') {
@@ -134,7 +134,7 @@ export class GameInfoSyncJob implements Job {
             runes: 15,
             playerBlacklist: [...data.bots, ...queue.players15Runes],
           })
-        case this.hasAggregation(AggregationField.Race) &&
+        case this.hasAggregation(AggregationType.Race) &&
           queue.races.length > 0:
           logger.debug(`processing races: ${queue.races.length} left.`)
 
@@ -143,7 +143,7 @@ export class GameInfoSyncJob implements Job {
             race: queue.races.shift(),
             playerBlacklist: [...data.bots],
           })
-        case this.hasAggregation(AggregationField.Background) &&
+        case this.hasAggregation(AggregationType.Background) &&
           queue.backgrounds.length > 0:
           logger.debug(
             `processing backgrounds: ${queue.backgrounds.length} left.`
@@ -154,7 +154,7 @@ export class GameInfoSyncJob implements Job {
             background: queue.backgrounds.shift(),
             playerBlacklist: [...data.bots],
           })
-        case this.hasAggregation(AggregationField.God) && queue.gods.length > 0:
+        case this.hasAggregation(AggregationType.God) && queue.gods.length > 0:
           logger.debug(`processing gods: ${queue.gods.length} left.`)
 
           return this.next({
@@ -266,8 +266,8 @@ export class GameInfoSyncJob implements Job {
     this.$resolve = resolve
   }
 
-  private hasAggregation(field: AggregationField) {
-    return this.aggregations.indexOf(field) !== -1
+  private hasAggregation(aggregationType: AggregationType) {
+    return this.aggregations.indexOf(aggregationType) !== -1
   }
 }
 
