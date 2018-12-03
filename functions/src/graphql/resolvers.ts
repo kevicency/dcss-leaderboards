@@ -10,7 +10,7 @@ import {
 export const resolvers = {
   DateTime: GraphQLDateTime,
   Query: {
-    rtSpeedruns: async (
+    speedruns: async (
       _: any,
       { by, allRunes }: { by: AggregationType; allRunes?: boolean }
     ) => {
@@ -25,7 +25,7 @@ export const resolvers = {
 
       return gameInfos
     },
-    tcSpeedruns: async () => {
+    turncountruns: async () => {
       const aggregations = aggregateGameInfos(
         { turns: 1 },
         AggregationType.Player,
@@ -40,10 +40,25 @@ export const resolvers = {
       return gameInfos
     },
 
-    highscores: async () => {
-      const gameInfos = await ComboHighscore.find().sort('gid')
+    highscores: async (_: any, { by }: { by: string }) => {
+      if (by === 'combo') {
+        const gameInfos = await ComboHighscore.find().sort('gid')
 
-      return gameInfos.map(x => x.toJSON())
+        return gameInfos.map(x => x.toJSON())
+      } else {
+        const aggregations = aggregateGameInfos(
+          { points: -1 },
+          AggregationType.Player,
+          {
+            limit: 25,
+          }
+        )
+        const gameInfos: GameInfoValues[] = await GameInfo.aggregate(
+          aggregations
+        ).exec()
+
+        return gameInfos
+      }
     },
   },
 }

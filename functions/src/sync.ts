@@ -33,17 +33,28 @@ async function sync() {
     ),
   ])
 
-  const limit = 5
-  const skipMorgue = true
+  const limit = 25
+  const skipMorgue = false
+
   const jobs = [
     new GameInfoSyncJob(sequell, {
       skipMorgue,
-      aggregations: [AggregationType.Player, AggregationType.Background],
       playerLimit: limit,
       filters: {
         min: 'dur',
       },
     }),
+    // 15 rune players
+    new GameInfoSyncJob(sequell, {
+      skipMorgue,
+      playerLimit: limit,
+      aggregations: [AggregationType.Player],
+      filters: {
+        min: 'dur',
+        urune: 15,
+      },
+    }),
+
     new GameInfoSyncJob(sequell, {
       skipMorgue,
       aggregations: [AggregationType.Player],
@@ -58,17 +69,6 @@ async function sync() {
       playerLimit: limit,
       filters: {
         max: 'score',
-      },
-    }),
-
-    // 15 rune players
-    new GameInfoSyncJob(sequell, {
-      skipMorgue,
-      playerLimit: limit,
-      aggregations: [AggregationType.Player],
-      filters: {
-        min: 'dur',
-        urune: 15,
       },
     }),
 

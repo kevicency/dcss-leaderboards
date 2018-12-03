@@ -35,10 +35,25 @@ const routes: RouteDefinition[] = [
     ],
   },
   {
+    name: 'turncountruns',
+    path: '/turncountruns',
+    forwardTo: 'turncountruns.player',
+    children: [
+      {
+        name: 'player',
+        path: '/player',
+      },
+    ],
+  },
+  {
     name: 'highscores',
     path: '/highscores',
-    forwardTo: 'highscores.combo',
+    forwardTo: 'highscores.player',
     children: [
+      {
+        name: 'player',
+        path: '/player',
+      },
       {
         name: 'combo',
         path: '/combo',

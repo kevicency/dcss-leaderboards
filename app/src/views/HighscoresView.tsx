@@ -22,48 +22,48 @@ import {
 import { BronzeTrophy, GoldTrophy, SilverTrophy } from '../components/Trophy'
 import { Box, Flex } from '../styled'
 
-const GET_SPEEDRUNS = gql`
-  query SpeedrunsQuery($by: AggregationType!, $allRunes: Boolean!) {
-    speedruns(by: $by, allRunes: $allRunes) {
+const GET_HIGHSCORES = gql`
+  query HighscoresQuery($by: HighscoreType!) {
+    highscores(by: $by) {
       background
       date
       duration
+      gid
       god
       morgue
       player
       race
-      vod
+      points
+      turns
     }
   }
 `
 
 const columns: IColumn[] = [
   {
-    key: 'position',
-    name: 'Pos',
-    fieldName: 'position',
-    minWidth: 20,
-    maxWidth: 20,
-    isResizable: true,
-    onRender: item => {
-      switch (item.position) {
-        case 1:
-          return <GoldTrophy />
-        case 2:
-          return <SilverTrophy />
-        case 3:
-          return <BronzeTrophy />
-        default:
-          return <span>{item.position}</span>
-      }
-    },
-  },
-  {
     key: 'player',
     name: 'Player',
     fieldName: 'player',
-    minWidth: 75,
+    minWidth: 90,
     maxWidth: 110,
+    isResizable: true,
+  },
+  {
+    key: 'points',
+    name: 'Points',
+    fieldName: 'points',
+    minWidth: 80,
+    maxWidth: 80,
+    isResizable: true,
+    isSorted: true,
+    isSortedDescending: false,
+  },
+  {
+    key: 'turns',
+    name: 'Turns',
+    fieldName: 'turns',
+    minWidth: 70,
+    maxWidth: 70,
     isResizable: true,
   },
   {
@@ -73,8 +73,6 @@ const columns: IColumn[] = [
     minWidth: 50,
     maxWidth: 50,
     isResizable: true,
-    isSorted: true,
-    isSortedDescending: true,
   },
   {
     key: 'race',
@@ -113,8 +111,7 @@ const columns: IColumn[] = [
     key: 'morgue',
     name: 'Morgue',
     fieldName: 'morgue',
-    minWidth: 80,
-    maxWidth: 80,
+    minWidth: 60,
     isResizable: true,
     onRender: item =>
       item.morgue ? (
@@ -123,34 +120,16 @@ const columns: IColumn[] = [
         </Link>
       ) : null,
   },
-  {
-    key: 'vod',
-    name: 'Video',
-    fieldName: 'vod',
-    minWidth: 90,
-    isResizable: true,
-    onRender: item =>
-      item.vod ? (
-        <Link href={item.vod} target="_blank">
-          Youtube
-        </Link>
-      ) : null,
-  },
 ]
 
-export type SpeedrunsViewProps = Partial<InjectedRouterNode> & {}
+export type HighscorsesViewProps = Partial<InjectedRouterNode> & {}
 
-@(routeNode as any)('speedruns') // todo compiler pls
-export class SpeedrunsView extends React.Component<SpeedrunsViewProps> {
+@(routeNode as any)('highscores') // todo compiler pls
+export class HighscoresView extends React.Component<HighscorsesViewProps> {
   public render() {
     const { route, router } = this.props
     const aggregationType = route.name.split('.')[1]
-    const variables = (aggregationType === 'player15Runes'
-      ? {
-          by: 'player',
-          allRunes: true,
-        }
-      : { by: aggregationType, allRunes: false }) as OperationVariables
+    const variables = { by: aggregationType } as OperationVariables
 
     return (
       <Flex flexDirection="column" flex="1">
@@ -161,21 +140,15 @@ export class SpeedrunsView extends React.Component<SpeedrunsViewProps> {
               linkFormat={PivotLinkFormat.tabs}
               selectedKey={aggregationType}
               onLinkClick={item => {
-                router.navigate(`speedruns.${item.props.itemKey}`)
+                router.navigate(`highscores.${item.props.itemKey}`)
               }}>
               <PivotItem itemKey="player" headerText="by Player" />
-              <PivotItem
-                itemKey="player15Runes"
-                headerText="by Player (15 runes)"
-              />
-              <PivotItem itemKey="race" headerText="by Race" />
-              <PivotItem itemKey="background" headerText="by Class" />
-              <PivotItem itemKey="god" headerText="by God" />
+              <PivotItem itemKey="combo" headerText="by Race/Class Combo" />
             </Pivot>
           </ContentContainer>
         </LightBackgroundContainer>
         <OverflowContentContainer flex="1">
-          <Query query={GET_SPEEDRUNS} variables={variables}>
+          <Query query={GET_HIGHSCORES} variables={variables}>
             {({ loading, error, data }: QueryResult) => {
               if (loading) {
                 return <FlexSpinner flex="1" />
@@ -196,7 +169,7 @@ export class SpeedrunsView extends React.Component<SpeedrunsViewProps> {
                   <FancyList
                     selectionMode={SelectionMode.none}
                     layoutMode={DetailsListLayoutMode.justified}
-                    items={data.speedruns.map((x: any, i: number) => ({
+                    items={data.highscores.map((x: any, i: number) => ({
                       ...x,
                       position: i + 1,
                     }))}
@@ -210,25 +183,45 @@ export class SpeedrunsView extends React.Component<SpeedrunsViewProps> {
       </Flex>
     )
   }
-
-  private getColumns(aggregationType: string) {
-    if (aggregationType !== 'player') {
-      const rankingColumnIdx = columns.findIndex(
-        x => x.fieldName === aggregationType
-      )
-
-      if (rankingColumnIdx !== -1) {
-        const rankingColumn = columns[rankingColumnIdx]
-
-        return [
-          ...columns.slice(0, 1),
-          rankingColumn,
-          ...columns.slice(1, rankingColumnIdx),
-          ...columns.slice(rankingColumnIdx + 1),
-        ]
-      }
+  private getColumns(aggregationType: string): IColumn[] {
+    if (aggregationType === 'combo') {
+      return [
+        {
+          key: 'gid',
+          name: 'Combo',
+          fieldName: 'gid',
+          minWidth: 40,
+          maxWidth: 40,
+          isResizable: true,
+        },
+        ...columns,
+      ]
     }
-
+    if (aggregationType === 'player') {
+      return [
+        {
+          key: 'position',
+          name: 'Pos',
+          fieldName: 'position',
+          minWidth: 20,
+          maxWidth: 20,
+          isResizable: true,
+          onRender: item => {
+            switch (item.position) {
+              case 1:
+                return <GoldTrophy />
+              case 2:
+                return <SilverTrophy />
+              case 3:
+                return <BronzeTrophy />
+              default:
+                return <span>{item.position}</span>
+            }
+          },
+        },
+        ...columns,
+      ]
+    }
     return columns
   }
 }

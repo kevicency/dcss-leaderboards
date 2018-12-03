@@ -1,12 +1,11 @@
 import { ApolloServer } from 'apollo-server-azure-functions'
-import { values } from 'lodash'
 import * as mongoose from 'mongoose'
 import { schema } from './graphql'
-import { GameInfoSyncJob } from './jobs'
+import { GameInfoSyncJob, GameInfoVideUpdateJob } from './jobs'
+import { ComboHighscoreSyncJob } from './jobs/sync'
 import { createLogger } from './logger'
 import { AggregationType } from './model'
 import { IrcSequell, Sequell } from './sequell'
-import { inSeries } from './utils'
 
 const logger = createLogger('functions')
 
@@ -33,34 +32,82 @@ const ensureMongoose = () =>
     )
   )
 
-export async function sync(aggregationIndex: number, force = false) {
+export async function sync(iteration: number, force = false) {
   if (process.env.NODE_ENV !== 'production' && !force) {
-    return logger.info('skipping sync on development evnironment')
+    return logger.info('skipping sync on development environment')
   }
+
+  logger.info(`starting sync iteration: ${iteration}`)
 
   const [sequell] = await Promise.all([ensureSequell(), ensureMongoose()])
 
   const playerLimit = 25
-  const aggregationTypes = values(AggregationType) as AggregationType[]
-  const aggregationType =
-    aggregationTypes[aggregationIndex % aggregationTypes.length]
 
-  const jobs = [
-    new GameInfoSyncJob(sequell, {
-      aggregations: [aggregationType],
-      playerLimit:
-        aggregationType === AggregationType.Player ? playerLimit : undefined,
-    }),
-  ]
-
-  return inSeries(
-    jobs.map(job => () =>
-      job.start().catch(err => {
-        logger.error(err)
-        return Promise.reject(err)
-      })
-    )
-  )
+  switch (iteration) {
+    case 0:
+      return await new GameInfoSyncJob(sequell, {
+        aggregations: [AggregationType.Player],
+        playerLimit,
+        filters: {
+          min: 'dur',
+        },
+      }).start()
+    case 1:
+      return await new GameInfoSyncJob(sequell, {
+        aggregations: [AggregationType.Background],
+        playerLimit,
+        filters: {
+          min: 'dur',
+        },
+      }).start()
+    case 2:
+      return await new GameInfoSyncJob(sequell, {
+        aggregations: [AggregationType.Race],
+        playerLimit,
+        filters: {
+          min: 'dur',
+        },
+      }).start()
+    case 3:
+      return await new GameInfoSyncJob(sequell, {
+        aggregations: [AggregationType.God],
+        playerLimit,
+        filters: {
+          min: 'dur',
+        },
+      }).start()
+    case 4:
+      return await new GameInfoSyncJob(sequell, {
+        aggregations: [AggregationType.Player],
+        playerLimit,
+        filters: {
+          min: 'turns',
+        },
+      }).start()
+    case 5:
+      return await new GameInfoSyncJob(sequell, {
+        aggregations: [AggregationType.Player],
+        playerLimit,
+        filters: {
+          max: 'score',
+        },
+      }).start()
+    case 6:
+      return await new GameInfoSyncJob(sequell, {
+        playerLimit,
+        aggregations: [AggregationType.Player],
+        filters: {
+          min: 'dur',
+          urune: 15,
+        },
+      }).start()
+    case 7:
+      return await new GameInfoVideUpdateJob().start()
+    case 8:
+      return await new ComboHighscoreSyncJob().start()
+    default:
+      return await Promise.resolve()
+  }
 }
 
 export function graphQL() {

@@ -3,7 +3,12 @@ import * as React from 'react'
 import { InjectedRouterNode, RouteNode } from 'react-router5'
 import { Footer, Header } from './components'
 import styled, { Flex } from './styled'
-import { ComboHighscoresView, Error404View, SpeedrunsView } from './views'
+import {
+  Error404View,
+  HighscoresView,
+  SpeedrunsView,
+  TurncountrunsView,
+} from './views'
 
 const Body = styled(Flex)`
   min-height: 100vh;
@@ -22,7 +27,8 @@ class App extends React.Component {
             {({ route }: InjectedRouterNode) => (
               <React.Fragment>
                 {/speedruns\/?.*/.test(route.name) && <SpeedrunsView />}
-                {/highscore\/?.*/.test(route.name) && <ComboHighscoresView />}
+                {/turncountruns\/?.*/.test(route.name) && <TurncountrunsView />}
+                {/highscore\/?.*/.test(route.name) && <HighscoresView />}
                 {/UNKNOWN_ROUTE\/?.*/.test(route.name) && <Error404View />}
               </React.Fragment>
             )}

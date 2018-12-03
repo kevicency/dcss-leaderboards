@@ -1,4 +1,4 @@
-import { gql, OperationVariables } from 'apollo-boost'
+import { gql } from 'apollo-boost'
 import {
   DetailsListLayoutMode,
   IColumn,
@@ -22,12 +22,12 @@ import {
 import { BronzeTrophy, GoldTrophy, SilverTrophy } from '../components/Trophy'
 import { Box, Flex } from '../styled'
 
-const GET_SPEEDRUNS = gql`
-  query SpeedrunsQuery($by: AggregationType!, $allRunes: Boolean!) {
-    speedruns(by: $by, allRunes: $allRunes) {
+const GET_TURNCOUNTRUNS = gql`
+  query TurncountrunsQuery {
+    turncountruns {
       background
       date
-      duration
+      turns
       god
       morgue
       player
@@ -67,9 +67,9 @@ const columns: IColumn[] = [
     isResizable: true,
   },
   {
-    key: 'duration',
-    name: 'Time',
-    fieldName: 'duration',
+    key: 'turns',
+    name: 'Turns',
+    fieldName: 'turns',
     minWidth: 50,
     maxWidth: 50,
     isResizable: true,
@@ -138,19 +138,12 @@ const columns: IColumn[] = [
   },
 ]
 
-export type SpeedrunsViewProps = Partial<InjectedRouterNode> & {}
+export type TurncountrunsViewProps = Partial<InjectedRouterNode> & {}
 
-@(routeNode as any)('speedruns') // todo compiler pls
-export class SpeedrunsView extends React.Component<SpeedrunsViewProps> {
+@(routeNode as any)('turncountruns') // todo compiler pls
+export class TurncountrunsView extends React.Component<TurncountrunsViewProps> {
   public render() {
     const { route, router } = this.props
-    const aggregationType = route.name.split('.')[1]
-    const variables = (aggregationType === 'player15Runes'
-      ? {
-          by: 'player',
-          allRunes: true,
-        }
-      : { by: aggregationType, allRunes: false }) as OperationVariables
 
     return (
       <Flex flexDirection="column" flex="1">
@@ -159,23 +152,16 @@ export class SpeedrunsView extends React.Component<SpeedrunsViewProps> {
             <Pivot
               headersOnly={true}
               linkFormat={PivotLinkFormat.tabs}
-              selectedKey={aggregationType}
+              selectedKey="player"
               onLinkClick={item => {
-                router.navigate(`speedruns.${item.props.itemKey}`)
+                router.navigate(`turncountruns.${item.props.itemKey}`)
               }}>
               <PivotItem itemKey="player" headerText="by Player" />
-              <PivotItem
-                itemKey="player15Runes"
-                headerText="by Player (15 runes)"
-              />
-              <PivotItem itemKey="race" headerText="by Race" />
-              <PivotItem itemKey="background" headerText="by Class" />
-              <PivotItem itemKey="god" headerText="by God" />
             </Pivot>
           </ContentContainer>
         </LightBackgroundContainer>
         <OverflowContentContainer flex="1">
-          <Query query={GET_SPEEDRUNS} variables={variables}>
+          <Query query={GET_TURNCOUNTRUNS}>
             {({ loading, error, data }: QueryResult) => {
               if (loading) {
                 return <FlexSpinner flex="1" />
@@ -196,11 +182,11 @@ export class SpeedrunsView extends React.Component<SpeedrunsViewProps> {
                   <FancyList
                     selectionMode={SelectionMode.none}
                     layoutMode={DetailsListLayoutMode.justified}
-                    items={data.speedruns.map((x: any, i: number) => ({
+                    items={data.turncountruns.map((x: any, i: number) => ({
                       ...x,
                       position: i + 1,
                     }))}
-                    columns={this.getColumns(aggregationType)}
+                    columns={columns}
                   />
                 </Box>
               )
@@ -209,26 +195,5 @@ export class SpeedrunsView extends React.Component<SpeedrunsViewProps> {
         </OverflowContentContainer>
       </Flex>
     )
-  }
-
-  private getColumns(aggregationType: string) {
-    if (aggregationType !== 'player') {
-      const rankingColumnIdx = columns.findIndex(
-        x => x.fieldName === aggregationType
-      )
-
-      if (rankingColumnIdx !== -1) {
-        const rankingColumn = columns[rankingColumnIdx]
-
-        return [
-          ...columns.slice(0, 1),
-          rankingColumn,
-          ...columns.slice(1, rankingColumnIdx),
-          ...columns.slice(rankingColumnIdx + 1),
-        ]
-      }
-    }
-
-    return columns
   }
 }

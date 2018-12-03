@@ -34,8 +34,8 @@ export const typeDefs = gql`
   }
 
   type Query {
-    rtSpeedruns(by: AggregationType!, allRunes: Boolean): [GameInfo]
-    tcSpeedruns: [GameInfo]
+    speedruns(by: AggregationType!, allRunes: Boolean): [GameInfo]
+    turncountruns: [GameInfo]
     highscores(by: HighscoreType!): [GameInfo]
   }
 `
