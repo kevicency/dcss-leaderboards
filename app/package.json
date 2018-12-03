@@ -28,7 +28,10 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "env-cmd .env.deploy yarn build",
-    "deploy": "az storage blob upload-batch --destination \"\\$web\" --source build --connection-string \"$SPEEDCRAWL_STORAGE\""
+    "deploy:upload": "az storage blob upload-batch --destination \"\\$web\" --source build --connection-string \"$SPEEDCRAWL_STORAGE\"",
+    "deploy:clean1": "az storage blob delete-batch --source \"\\$web\" --pattern \"static/**/*\" --connection-string \"$SPEEDCRAWL_STORAGE\"",
+    "deploy:clean2": "az storage blob delete-batch --source \"\\$web\" --pattern \"precache-manifest.*\" --connection-string \"$SPEEDCRAWL_STORAGE\"",
+    "deploy": "yarn deploy:clean1&& yarn deploy:clean2 && yarn deploy:upload"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
