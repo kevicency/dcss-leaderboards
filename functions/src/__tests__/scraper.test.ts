@@ -8,7 +8,7 @@ const sut = new ComboHighscoreParser()
 describe('ComboHighscoreParser', async () => {
   test('parse', () => {
     const html = fs.readFileSync(
-      path.join(__dirname, 'combo-highscores.htm'),
+      path.join(__dirname, 'data', 'combo-highscores.html'),
       'utf8'
     )
 

@@ -31,7 +31,7 @@
     "deploy:upload": "az storage blob upload-batch --destination \"\\$web\" --source build --connection-string \"$DCSS_LEADERBOARDS\"",
     "deploy:clean1": "az storage blob delete-batch --source \"\\$web\" --pattern \"static/**/*\" --connection-string \"$DCSS_LEADERBOARDS\"",
     "deploy:clean2": "az storage blob delete-batch --source \"\\$web\" --pattern \"precache-manifest.*\" --connection-string \"$DCSS_LEADERBOARDS\"",
-    "deploy": "yarn deploy:clean1&& yarn deploy:clean2 && yarn deploy:upload"
+    "deploy": "yarn deploy:upload"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
