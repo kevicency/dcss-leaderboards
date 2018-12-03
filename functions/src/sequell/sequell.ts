@@ -13,12 +13,14 @@ type CharacterQuery = {
   god?: string
 }
 
+export type lgQueryFilters = {
+  [key: string]: string | number | { op: string; value: string | number }
+}
 export type lgQuery = CharacterQuery & {
   type: 'lg'
   player?: string
   playerBlacklist?: string[]
-  min?: string
-  runes?: number
+  filters?: lgQueryFilters
 }
 
 export type logQuery = {

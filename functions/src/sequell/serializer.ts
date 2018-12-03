@@ -33,12 +33,15 @@ export class SequellSerializer implements ISequellSerializer {
       message = `${message} ${query.god}`
     }
 
-    if (query.min) {
-      message = `${message} min=${query.min}`
-    }
+    if (query.filters) {
+      message = Object.keys(query.filters).reduce((memo, key) => {
+        const valueOrObj = query.filters[key]
+        const value =
+          typeof valueOrObj === 'object' ? valueOrObj.value : valueOrObj
+        const op = typeof valueOrObj === 'object' ? valueOrObj.op : '='
 
-    if (query.runes) {
-      message = `${message} urune=${query.runes}`
+        return `${memo} ${key}${op}${value}`
+      }, message)
     }
 
     if (query.playerBlacklist) {

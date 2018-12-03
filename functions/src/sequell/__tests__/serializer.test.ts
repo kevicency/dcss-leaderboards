@@ -20,8 +20,7 @@ test('serialize lg', () => {
     race: 'Mi',
     background: 'Fi',
     god: 'Oka',
-    min: 'dur',
-    runes: 15,
+    filters: { min: 'dur', runes: 15 },
   }
   const playerQuery = {
     ...starQuery,

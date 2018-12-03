@@ -4,7 +4,7 @@ import * as data from '../data'
 import { createLogger } from '../logger'
 import { AggregationType, ComboHighscore, GameInfo } from '../model'
 import { Scraper, WebScraper } from '../scraper'
-import { lgQuery, Sequell, SequellResult } from '../sequell'
+import { lgQuery, lgQueryFilters, Sequell, SequellResult } from '../sequell'
 import { Job } from './job'
 
 const logger = createLogger('sync')
@@ -14,8 +14,8 @@ export class GameInfoSyncJobQueue {
   public backgrounds: string[] = [...data.backgrounds]
   public gods: string[] = [...data.godKeywords]
   public players: string[] = []
-  public players15Runes: string[] = []
 }
+
 export interface GameInfoSyncJobOptions {
   onError?(err: any): void
   onTimeout?(query: any): void
@@ -23,8 +23,8 @@ export interface GameInfoSyncJobOptions {
   delay?: number
   timeout?: number
   playerLimit?: number
-  playerAllRunes?: boolean
   skipMorgue?: boolean
+  filters?: lgQueryFilters
   aggregations?: AggregationType[]
 }
 
@@ -37,8 +37,8 @@ export class GameInfoSyncJob implements Job {
   private aggregations: AggregationType[]
   private killedMessages: string[] = []
   private playerLimit: number
-  private playerAllRunes: boolean
   private skipMorgue: boolean
+  private filters: { min?: any; max?: any }
 
   public delay: number
   public timeout: number
@@ -50,10 +50,10 @@ export class GameInfoSyncJob implements Job {
       onTimeout,
       onFinished,
       delay,
+      filters,
       timeout,
       skipMorgue,
       playerLimit,
-      playerAllRunes,
       aggregations,
     }: GameInfoSyncJobOptions = {}
   ) {
@@ -61,10 +61,12 @@ export class GameInfoSyncJob implements Job {
     this.delay = delay || 1000
     this.timeout = timeout || 95000
     this.playerLimit = playerLimit || 10
-    this.playerAllRunes = playerAllRunes || false
     this.skipMorgue = skipMorgue || false
     this.aggregations =
       aggregations || (values(AggregationType) as AggregationType[])
+    this.filters = filters || {
+      min: 'dur',
+    }
     this.queue = new GameInfoSyncJobQueue()
     this.emitter = new EventEmitter()
     this.emitter.on('timeout', onTimeout || noop)
@@ -113,33 +115,13 @@ export class GameInfoSyncJob implements Job {
           )
 
           return this.next({
-            min: 'dur',
             playerBlacklist: [...data.bots, ...queue.players],
-          })
-        case this.hasAggregation(AggregationType.Player) &&
-          this.playerAllRunes &&
-          queue.players15Runes.length < this.playerLimit - 1:
-          if (result && result.type === 'lg') {
-            queue.players15Runes.push(result.player)
-          }
-
-          logger.debug(
-            `processing players (15 runes): ${queue.players15Runes.length}/${
-              this.playerLimit
-            }.`
-          )
-
-          return this.next({
-            min: 'dur',
-            runes: 15,
-            playerBlacklist: [...data.bots, ...queue.players15Runes],
           })
         case this.hasAggregation(AggregationType.Race) &&
           queue.races.length > 0:
           logger.debug(`processing races: ${queue.races.length} left.`)
 
           return this.next({
-            min: 'dur',
             race: queue.races.shift(),
             playerBlacklist: [...data.bots],
           })
@@ -150,7 +132,6 @@ export class GameInfoSyncJob implements Job {
           )
 
           return this.next({
-            min: 'dur',
             background: queue.backgrounds.shift(),
             playerBlacklist: [...data.bots],
           })
@@ -158,7 +139,6 @@ export class GameInfoSyncJob implements Job {
           logger.debug(`processing gods: ${queue.gods.length} left.`)
 
           return this.next({
-            min: 'dur',
             god: queue.gods.shift(),
             playerBlacklist: [...data.bots],
           })
@@ -220,7 +200,18 @@ export class GameInfoSyncJob implements Job {
     }
   }
 
-  next = (query: Omit<lgQuery, 'type'> | string) => {
+  next = (baseQuery: Omit<lgQuery, 'type'> | string) => {
+    const query =
+      typeof baseQuery === 'string'
+        ? baseQuery
+        : {
+            ...baseQuery,
+            filters: {
+              ...baseQuery.filters,
+              ...this.filters,
+            },
+          }
+
     logger.debug(`next: ${JSON.stringify(query)}`)
 
     const self = this

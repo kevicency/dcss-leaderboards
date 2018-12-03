@@ -36,6 +36,13 @@ test('parse lg', () => {
   expect(sut.lgParse(multiWordGod)).toMatchObject({
     god: 'Nemelex Xobeh',
   })
+
+  const oldLogNoRunes =
+    '4115. [game_key=hyperbolic:cdo:20101009185913S] hyperbolic the Tainter (L14 SpEn of Ashenzari), escaped with the Orb on 2010-11-10 00:09:15, with 322098 points after 17122 turns and 2:21:11.'
+  expect(sut.lgParse(oldLogNoRunes)).toMatchObject({
+    runes: 3,
+    points: 322098,
+  })
 })
 
 test('parse log', () => {

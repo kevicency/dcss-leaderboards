@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose'
 import { GameInfoSyncJob, GameInfoVideUpdateJob } from './jobs'
 import { ComboHighscoreSyncJob } from './jobs/sync'
 import { createLogger } from './logger'
+import { AggregationType } from './model'
 import { IrcSequell, Sequell } from './sequell'
 import { inSeries } from './utils'
 
@@ -32,12 +33,41 @@ async function sync() {
     ),
   ])
 
-  const limit = 10
+  const limit = 5
+  const skipMorgue = true
   const jobs = [
     new GameInfoSyncJob(sequell, {
-      skipMorgue: true,
+      skipMorgue,
       playerLimit: limit,
-      playerAllRunes: true,
+      filters: {
+        min: 'dur',
+      },
+    }),
+    new GameInfoSyncJob(sequell, {
+      skipMorgue,
+      playerLimit: limit,
+      filters: {
+        min: 'turns',
+      },
+    }),
+    new GameInfoSyncJob(sequell, {
+      skipMorgue,
+      aggregations: [AggregationType.Player],
+      playerLimit: limit,
+      filters: {
+        max: 'score',
+      },
+    }),
+
+    // 15 rune players
+    new GameInfoSyncJob(sequell, {
+      skipMorgue,
+      playerLimit: limit,
+      aggregations: [AggregationType.Player],
+      filters: {
+        min: 'dur',
+        runes: 15,
+      },
     }),
 
     new GameInfoVideUpdateJob(),
