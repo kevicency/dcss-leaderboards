@@ -20,7 +20,11 @@ export const resolvers = {
     //   return gameInfos.map(x => x.toJSON())
     // },
     speedruns: async (_: any, { by }: { by: AggregationField }) => {
-      const aggregations = GameInfoAggregations.aggregateSpeedrunBy(by)
+      const limit =
+        by === AggregationField.Player15Runes || by === AggregationField.Player
+          ? 25
+          : undefined
+      const aggregations = GameInfoAggregations.aggregateSpeedrunBy(by, limit)
       const gameInfos: GameInfoValues[] = await GameInfo.aggregate(
         aggregations
       ).exec()
