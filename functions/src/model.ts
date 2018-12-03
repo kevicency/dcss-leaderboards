@@ -54,7 +54,6 @@ export const ComboHighscore = model<GameInfoDocument>(
 
 export enum AggregationType {
   Player = 'player',
-  Player15Runes = 'player15Runes',
   Race = 'race',
   Background = 'background',
   God = 'god',
@@ -79,53 +78,47 @@ const fieldNames = [
 ]
 export const getAggregationFieldName = (
   aggregationType: AggregationType
-): string =>
-  aggregationType === AggregationType.Player15Runes
-    ? getAggregationFieldName(AggregationType.Player)
-    : aggregationType
+): string => aggregationType
 
-export const GameInfoAggregations = {
-  aggregateSpeedrunBy: (aggregationField: AggregationType, limit?: number) => {
-    const aggregationFieldName = getAggregationFieldName(aggregationField)
+export const aggregateGameInfos = (
+  sort: { [key: string]: any },
+  aggregationType: AggregationType,
+  options: { limit?: number; allRunes?: boolean } = {}
+) => {
+  const aggregationFieldName = getAggregationFieldName(aggregationType)
 
-    const filter =
-      aggregationField === AggregationType.Player15Runes
-        ? {
-            $match: { runes: { $eq: 15 } },
-          }
-        : null
+  const $match = options.allRunes
+    ? {
+        $match: { runes: { $eq: 15 } },
+      }
+    : null
 
-    return [
-      filter,
-      {
-        $sort: {
-          duration: 1,
+  const $limit = options.limit
+    ? {
+        $limit: options.limit,
+      }
+    : null
+
+  return [
+    $match,
+    {
+      $sort: sort,
+    },
+    {
+      $group: fieldNames.reduce(
+        (memo, fieldName) => {
+          memo[fieldName] = { $first: `$${fieldName}` }
+
+          return memo
         },
-      },
-      {
-        $group: fieldNames.reduce(
-          (memo, fieldName) => {
-            memo[fieldName] = { $first: `$${fieldName}` }
-
-            return memo
-          },
-          {
-            _id: { field: `$${aggregationFieldName}`, runes: '$runes' },
-          }
-        ),
-      },
-      {
-        $sort: {
-          duration: 1,
-        },
-      },
-      ...(limit
-        ? [
-            {
-              $limit: limit,
-            },
-          ]
-        : []),
-    ].filter(Boolean)
-  },
+        {
+          _id: `$${aggregationFieldName}`,
+        }
+      ),
+    },
+    {
+      $sort: sort,
+    },
+    $limit,
+  ].filter(Boolean)
 }

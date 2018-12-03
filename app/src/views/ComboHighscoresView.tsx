@@ -17,7 +17,7 @@ import { Box } from '../styled'
 
 const GET_COMBO_HIGHSCORES = gql`
   query ComboHighscoresQuery {
-    comboHighscores {
+    highscores(by: combo) {
       background
       date
       duration

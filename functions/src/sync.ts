@@ -38,6 +38,7 @@ async function sync() {
   const jobs = [
     new GameInfoSyncJob(sequell, {
       skipMorgue,
+      aggregations: [AggregationType.Player, AggregationType.Background],
       playerLimit: limit,
       filters: {
         min: 'dur',
@@ -45,6 +46,7 @@ async function sync() {
     }),
     new GameInfoSyncJob(sequell, {
       skipMorgue,
+      aggregations: [AggregationType.Player],
       playerLimit: limit,
       filters: {
         min: 'turns',
@@ -66,7 +68,7 @@ async function sync() {
       aggregations: [AggregationType.Player],
       filters: {
         min: 'dur',
-        runes: 15,
+        urune: 15,
       },
     }),
 
@@ -75,7 +77,7 @@ async function sync() {
   ]
 
   return inSeries(
-    jobs.slice(1, 3).map(job => () =>
+    jobs.map(job => () =>
       job.start().catch(err => {
         logger.error(err)
 

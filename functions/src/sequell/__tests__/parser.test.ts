@@ -12,7 +12,7 @@ test('parse lg', () => {
     account: 'idfk',
     background: 'Fi',
     date: new Date('2018-07-03T20:21:30.000Z'),
-    duration: '0:27:40',
+    duration: '00:27:40',
     gid: 'idfk:cao:20180603195308S',
     god: 'Makhleb',
     player: 'idfk',

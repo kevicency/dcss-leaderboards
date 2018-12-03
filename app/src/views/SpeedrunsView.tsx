@@ -1,11 +1,24 @@
-import { gql, OperationVariables } from 'apollo-boost';
-import { DetailsListLayoutMode, IColumn, Link, Pivot, PivotItem, PivotLinkFormat, SelectionMode } from 'office-ui-fabric-react';
-import * as React from 'react';
-import { Query, QueryResult } from 'react-apollo';
-import { InjectedRouterNode, routeNode } from 'react-router5';
-import { ContentContainer, ErrorMessage, FancyList, FlexSpinner } from '../components';
-import { BronzeTrophy, GoldTrophy, SilverTrophy } from '../components/Trophy';
-import styled, { Box, Flex } from '../styled';
+import { gql, OperationVariables } from 'apollo-boost'
+import {
+  DetailsListLayoutMode,
+  IColumn,
+  Link,
+  Pivot,
+  PivotItem,
+  PivotLinkFormat,
+  SelectionMode,
+} from 'office-ui-fabric-react'
+import * as React from 'react'
+import { Query, QueryResult } from 'react-apollo'
+import { InjectedRouterNode, routeNode } from 'react-router5'
+import {
+  ContentContainer,
+  ErrorMessage,
+  FancyList,
+  FlexSpinner,
+} from '../components'
+import { BronzeTrophy, GoldTrophy, SilverTrophy } from '../components/Trophy'
+import styled, { Box, Flex } from '../styled'
 
 const PivotContainer = styled.div`
   background: ${({ theme }) => theme.palette.neutralLighterAlt};
@@ -13,7 +26,7 @@ const PivotContainer = styled.div`
 
 const GET_SPEEDRUNS = gql`
   query SpeedrunsQuery($by: AggregationType!) {
-    speedruns(by: $by) {
+    rtSpeedruns(by: $by) {
       background
       date
       duration

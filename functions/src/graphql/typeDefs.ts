@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from 'graphql-tag'
 
 export const typeDefs = gql`
   scalar DateTime
@@ -23,15 +23,20 @@ export const typeDefs = gql`
 
   enum AggregationType {
     player
-    player15Runes
     race
     background
     god
   }
 
+  enum HighscoreType {
+    combo
+    player
+  }
+
   type Query {
-    speedruns(by: AggregationType!): [GameInfo]
-    comboHighscores: [GameInfo]
+    rtSpeedruns(by: AggregationType!, allRunes: Boolean): [GameInfo]
+    tcSpeedruns: [GameInfo]
+    highscores(by: HighscoreType!): [GameInfo]
   }
 `
 export default typeDefs

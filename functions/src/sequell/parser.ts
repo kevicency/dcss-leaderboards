@@ -40,7 +40,7 @@ export class SequellParser implements ISequellParser {
           date: new Date(`${match[10].replace(' ', 'T')}Z`),
           points: +match[11],
           turns: +match[12],
-          duration: match[13],
+          duration: match[13].replace(/^(\d):/, '0$1:'), // .padStart(8, '0'),
         }
       }
     }
